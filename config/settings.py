@@ -5,7 +5,7 @@ from pathlib import Path
 BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'django-insecure-01a^wc2kflvivde7%4j!*3n2090!-s)+21@k5g5ur4!=a)p#g8'
 DEBUG = True
-ALLOWED_HOSTS = ["https://amaarback.pythonanywhere.com"]
+ALLOWED_HOSTS = ["*"]
 APPEND_SLASH=False
 
 INSTALLED_APPS = [
