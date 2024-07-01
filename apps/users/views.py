@@ -1,4 +1,3 @@
-# views.py
 from django.contrib.auth.hashers import make_password
 from rest_framework import generics, status, viewsets
 from rest_framework.permissions import IsAuthenticated
@@ -35,15 +34,20 @@ class LoginView(generics.GenericAPIView):
 class UserListCreateAPIView(generics.ListCreateAPIView):
     queryset = User.objects.all()
     serializer_class = UserSerializer
+    permission_classes = [IsAuthenticated]
+    
 
 class UserDetailsAPIView(generics.RetrieveUpdateDestroyAPIView):
     queryset = User.objects.all()
     serializer_class = UserSerializer
+    permission_classes = [IsAuthenticated]
 
 class CompanyListCreateView(generics.ListCreateAPIView):
     queryset = Company.objects.all()
     serializer_class = CompanySerializer
+    permission_classes = [IsAuthenticated]
 
 class CompanyDetailView(generics.RetrieveUpdateDestroyAPIView):
     queryset = Company.objects.all()
     serializer_class = CompanySerializer
+    permission_classes = [IsAuthenticated]

@@ -14,31 +14,32 @@ from datetime import timedelta, date, datetime
 class CategoryViewSet(viewsets.ModelViewSet):
     queryset = Category.objects.all()
     serializer_class = CategorySerializer
-    permission_classes = [AllowAny]
+    permission_classes = [IsAuthenticated]
 
 class ProductViewSet(viewsets.ModelViewSet):
     queryset = Product.objects.all()
     serializer_class = ProductSerializer
-    permission_classes = [IsAuthenticatedOrReadOnly]
+    permission_classes = [IsAuthenticated]
 
 class BannerViewSet(viewsets.ModelViewSet):
     queryset = Banner.objects.all()
     serializer_class = BannerSerializer
-    permission_classes = [AllowAny]
+    permission_classes = [IsAuthenticated]
 
 
 class OrderListAPIView(generics.ListCreateAPIView):
     queryset = Order.objects.all()
     serializer_class = OrderSerializer
+    permission_classes = [IsAuthenticated]
 
 class OrderDetailAPIView(generics.RetrieveUpdateDestroyAPIView):
     queryset = Order.objects.all()
     serializer_class = OrderSerializer
-
+    permission_classes = [IsAuthenticated]
 
 
 class DashboardView(APIView):
-    permission_classes = [AllowAny]
+    permission_classes = [IsAuthenticated]
 
     def get(self, request):
         today = now().date()
