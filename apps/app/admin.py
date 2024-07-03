@@ -8,31 +8,31 @@ class OrderItemInline(admin.TabularInline):
 
 @admin.register(Order)
 class OrderAdmin(admin.ModelAdmin):
-    list_display = ('id', 'address', 'latitude', 'longitude')
-    search_fields = ('address',)
+    list_display = ('id', 'address_uz')
+    search_fields = ('address_uz',)
     inlines = [OrderItemInline]
 
 # Register OrderItem model
 @admin.register(OrderItem)
 class OrderItemAdmin(admin.ModelAdmin):
     list_display = ('id', 'order', 'product', 'quantity')
-    list_filter = ('order__address', 'product__name')
+    list_filter = ('order__address_uz', 'product__name_uz')
 
 @admin.register(Product)
 class ProductAdmin(admin.ModelAdmin):
-    list_display = ('name', 'price', 'category')
+    list_display = ('name_uz', 'price', 'category')
     list_filter = ('category',)
-    search_fields = ('name',)
+    search_fields = ('name_uz',)
 
 # Register Category model
 @admin.register(Category)
 class CategoryAdmin(admin.ModelAdmin):
-    list_display = ('name',)
-    search_fields = ('name',)
+    list_display = ('name_uz',)
+    search_fields = ('name_uz',)
 
-# Register Banner model
+
 @admin.register(Banner)
 class BannerAdmin(admin.ModelAdmin):
-    list_display = ('title', 'product')
-    search_fields = ('title', 'product__name')
+    list_display = ('title_uz', 'product')
+    search_fields = ('title_uz', 'product__name_uz')
     # Additional configurations as needed

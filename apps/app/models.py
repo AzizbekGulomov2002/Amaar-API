@@ -3,15 +3,23 @@ from django.db import models
 from apps.users.models import User
 
 class Category(models.Model):
-    name = models.CharField(max_length=255)
+    name_uz = models.CharField(max_length=255, null=True, blank=True)
+    name_ru = models.CharField(max_length=255, null=True, blank=True)
+    name_en = models.CharField(max_length=255, null=True, blank=True)
     image = models.ImageField(upload_to='category_images/')
 
     def __str__(self):
         return self.name
 
 class Product(models.Model):
-    name = models.CharField(max_length=255)
-    description = models.TextField()
+    name_uz = models.CharField(max_length=255, null=True, blank=True)
+    name_ru = models.CharField(max_length=255, null=True, blank=True)
+    name_en = models.CharField(max_length=255, null=True, blank=True)
+
+    description_uz = models.TextField(null=True, blank=True)
+    description_ru = models.TextField(null=True, blank=True)
+    description_en = models.TextField(null=True, blank=True)
+
     price = models.DecimalField(max_digits=10, decimal_places=2)
     category = models.ForeignKey(Category, on_delete=models.CASCADE)
     images = models.JSONField(default=list)
@@ -20,8 +28,14 @@ class Product(models.Model):
         return self.name
 
 class Banner(models.Model):
-    title = models.CharField(max_length=255)
-    description = models.TextField()
+    title_uz = models.CharField(max_length=255, null=True, blank=True)
+    title_ru = models.CharField(max_length=255, null=True, blank=True)
+    title_en = models.CharField(max_length=255, null=True, blank=True)
+
+    description_uz = models.TextField(null=True, blank=True)
+    description_ru = models.TextField(null=True, blank=True)
+    description_en = models.TextField(null=True, blank=True)
+
     image = models.ImageField(upload_to='banners/')
     product = models.ForeignKey(Product, on_delete=models.CASCADE)
     def __str__(self):
@@ -29,10 +43,22 @@ class Banner(models.Model):
 
 
 class Order(models.Model):
-    address = models.CharField(max_length=255)
-    latitude = models.FloatField()
-    longitude = models.FloatField()
-    comment = models.TextField(blank=True)
+    address_uz = models.CharField(max_length=255, null=True, blank=True)
+    address_ru = models.CharField(max_length=255, null=True, blank=True)
+    address_uz = models.CharField(max_length=255, null=True, blank=True)
+
+    latitude_uz = models.FloatField(null=True, blank=True)
+    latitude_ru = models.FloatField(null=True, blank=True)
+    latitude_en = models.FloatField(null=True, blank=True)
+
+    longitude_uz = models.FloatField(null=True, blank=True)
+    longitude_ru = models.FloatField(null=True, blank=True)
+    longitude_en = models.FloatField(null=True, blank=True)
+
+    comment_uz = models.TextField(null=True, blank=True)
+    comment_ru = models.TextField(null=True, blank=True)
+    comment_en = models.TextField(null=True, blank=True)
+
     created_at = models.DateTimeField(auto_now_add=True)
     user = models.ForeignKey(User, related_name='orders', on_delete=models.SET_NULL, null=True, blank=True)
 

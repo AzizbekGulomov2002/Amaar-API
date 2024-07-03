@@ -2,16 +2,39 @@ from rest_framework import serializers
 from apps.app.models import Banner, Category, Product, OrderItem, Order
 
 
-class CategorySerializer(serializers.ModelSerializer):
-    # image = serializers.CharField(max_length=50000)
-    class Meta:
-        model = Category
-        fields = ['id', 'name', 'image']
+
+
+
 
 class ProductSerializer(serializers.ModelSerializer):
     class Meta:
         model = Product
-        fields = ['id', 'name', 'description', 'price', 'category', 'images']
+        fields = ['id', 'name_uz', 'description_uz', 'price', 'category', 'images']
+
+class CategorySerializer(serializers.ModelSerializer):
+    products = ProductSerializer(many=True, read_only=True, source='product_set')
+
+    class Meta:
+        model = Category
+        fields = ['id', 'name_uz', 'image', 'products']
+
+
+# class CategorySerializer(serializers.ModelSerializer):
+#     class Meta:
+#         model = Category
+#         fields = ['id', 'name', 'image']
+#     # def to_representation(self, instance):
+#     #     representation = super().to_representation(instance)
+#     #     if hasattr(self.context.get('view'), 'action'):
+#     #         if self.context.get('view').action == 'retrieve':
+#     #             products_query = instance.product_set.all()
+#     #             products_data = ProductSerializer(products_query, many=True).data
+#     #             return {
+#     #                 **representation,
+#     #                 'products_count': len(products_data),
+#     #                 'products': products_data
+#     #             }
+#     #     return representation
 
 class BannerSerializer(serializers.ModelSerializer):
     class Meta:

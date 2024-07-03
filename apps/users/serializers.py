@@ -40,11 +40,11 @@ class LoginSerializer(serializers.Serializer):
 #
 
 class UserSerializer(serializers.ModelSerializer):
-    history = serializers.ReadOnlyField(source='get_history')
+    # history = serializers.ReadOnlyField(source='get_history')
 
     class Meta:
         model = User
-        fields = ['phone_number', 'name', 'is_active', 'is_staff', 'date_joined', 'company', 'history']
+        fields = ['phone_number', 'name', 'is_active', 'is_staff', 'date_joined', 'company']
 
 class CompanySerializer(serializers.ModelSerializer):
     class Meta:
