@@ -39,7 +39,7 @@ class CategorySerializer(serializers.ModelSerializer):
 class BannerSerializer(serializers.ModelSerializer):
     class Meta:
         model = Banner
-        fields = ['id', 'title', 'description', 'image', 'product']
+        fields = ['id', 'title_uz', 'description_uz', 'image', 'product']
 
 
 class OrderItemSerializer(serializers.ModelSerializer):
@@ -52,7 +52,7 @@ class OrderSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Order
-        fields = ['id','address', 'latitude', 'longitude', 'comment', 'products']
+        fields = ['id','address_uz', 'latitude_uz', 'longitude_uz', 'comment_uz', 'products']
 
     def create(self, validated_data):
         items_data = validated_data.pop('products')
