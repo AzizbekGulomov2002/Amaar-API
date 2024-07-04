@@ -28,9 +28,7 @@ class Product(models.Model):
         return self.name
 
 class Banner(models.Model):
-    title_uz = models.CharField(max_length=255, null=True, blank=True)
-    title_ru = models.CharField(max_length=255, null=True, blank=True)
-    title_en = models.CharField(max_length=255, null=True, blank=True)
+    color = models.CharField(max_length=255)
 
     description_uz = models.TextField(null=True, blank=True)
     description_ru = models.TextField(null=True, blank=True)

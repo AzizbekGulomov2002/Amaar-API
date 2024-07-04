@@ -2,21 +2,17 @@ from rest_framework import serializers
 from apps.app.models import Banner, Category, Product, OrderItem, Order
 
 
-
-
-
-
 class ProductSerializer(serializers.ModelSerializer):
     class Meta:
         model = Product
-        fields = ['id', 'name_uz', 'description_uz', 'price', 'category', 'images']
+        fields = ['id', 'name_uz','name_ru','name_en', 'description_uz','description_ru','description_en', 'price', 'category', 'images']
 
 class CategorySerializer(serializers.ModelSerializer):
     products = ProductSerializer(many=True, read_only=True, source='product_set')
 
     class Meta:
         model = Category
-        fields = ['id', 'name_uz', 'image', 'products']
+        fields = ['id', 'name_uz','name_ru','name_en', 'image', 'products']
 
 
 # class CategorySerializer(serializers.ModelSerializer):
@@ -39,7 +35,7 @@ class CategorySerializer(serializers.ModelSerializer):
 class BannerSerializer(serializers.ModelSerializer):
     class Meta:
         model = Banner
-        fields = ['id', 'title_uz', 'description_uz', 'image', 'product']
+        fields = ['id', 'color', 'description_uz','description_ru','description_en', 'image', 'product']
 
 
 class OrderItemSerializer(serializers.ModelSerializer):
@@ -52,7 +48,7 @@ class OrderSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Order
-        fields = ['id','address_uz', 'latitude_uz', 'longitude_uz', 'comment_uz', 'products']
+        fields = ['id','address_uz','address_ru','address_en', 'latitude_uz','latitude_ru', 'latitude_en','longitude_uz','longitude_ru','longitude_en', 'comment_uz','comment_ru','comment_en', 'products']
 
     def create(self, validated_data):
         items_data = validated_data.pop('products')

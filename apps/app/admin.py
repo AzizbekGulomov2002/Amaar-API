@@ -33,6 +33,6 @@ class CategoryAdmin(admin.ModelAdmin):
 
 @admin.register(Banner)
 class BannerAdmin(admin.ModelAdmin):
-    list_display = ('title_uz', 'product')
-    search_fields = ('title_uz', 'product__name_uz')
+    list_display = ('color', 'product')
+    search_fields = ('color', 'product__name_uz')
     # Additional configurations as needed
