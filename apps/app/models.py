@@ -1,6 +1,6 @@
 from django.db import models
-
 from apps.users.models import User
+
 
 class Category(models.Model):
     name_uz = models.CharField(max_length=255, null=True, blank=True)
@@ -9,7 +9,13 @@ class Category(models.Model):
     image = models.ImageField(upload_to='category_images/')
 
     def __str__(self):
-        return self.name
+        return self.name_uz or self.name_ru or self.name_en
+
+    class Meta:
+        ordering = ['name_uz', 'name_ru', 'name_en']
+        verbose_name = 'Category'
+        verbose_name_plural = 'Categories'
+
 
 class Product(models.Model):
     name_uz = models.CharField(max_length=255, null=True, blank=True)
@@ -25,7 +31,13 @@ class Product(models.Model):
     images = models.JSONField(default=list)
 
     def __str__(self):
-        return self.name
+        return self.name_uz or self.name_ru or self.name_en
+
+    class Meta:
+        ordering = ['name_uz', 'name_ru', 'name_en']
+        verbose_name = 'Product'
+        verbose_name_plural = 'Products'
+
 
 class Banner(models.Model):
     color = models.CharField(max_length=255)
@@ -36,14 +48,20 @@ class Banner(models.Model):
 
     image = models.ImageField(upload_to='banners/')
     product = models.ForeignKey(Product, on_delete=models.CASCADE)
+
     def __str__(self):
-        return self.title
+        return f"Banner {self.id} - {self.color}"
+
+    class Meta:
+        ordering = ['color']
+        verbose_name = 'Banner'
+        verbose_name_plural = 'Banners'
 
 
 class Order(models.Model):
     address_uz = models.CharField(max_length=255, null=True, blank=True)
     address_ru = models.CharField(max_length=255, null=True, blank=True)
-    address_uz = models.CharField(max_length=255, null=True, blank=True)
+    address_en = models.CharField(max_length=255, null=True, blank=True)
 
     latitude_uz = models.FloatField(null=True, blank=True)
     latitude_ru = models.FloatField(null=True, blank=True)
@@ -60,7 +78,18 @@ class Order(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     user = models.ForeignKey(User, related_name='orders', on_delete=models.SET_NULL, null=True, blank=True)
 
+    class Meta:
+        ordering = ['-created_at']
+        verbose_name = 'Order'
+        verbose_name_plural = 'Orders'
+
+
 class OrderItem(models.Model):
     order = models.ForeignKey(Order, related_name='products', on_delete=models.CASCADE)
     product = models.ForeignKey(Product, on_delete=models.CASCADE)
     quantity = models.PositiveIntegerField()
+
+    class Meta:
+        ordering = ['order']
+        verbose_name = 'Order Item'
+        verbose_name_plural = 'Order Items'

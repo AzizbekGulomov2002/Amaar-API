@@ -1,54 +1,34 @@
 from rest_framework import serializers
 from apps.app.models import Banner, Category, Product, OrderItem, Order
 
-
 class ProductSerializer(serializers.ModelSerializer):
     class Meta:
         model = Product
-        fields = ['id', 'name_uz','name_ru','name_en', 'description_uz','description_ru','description_en', 'price', 'category', 'images']
+        fields = ['id', 'name_uz', 'name_ru', 'name_en', 'description_uz', 'description_ru', 'description_en', 'price', 'category', 'images']
 
 class CategorySerializer(serializers.ModelSerializer):
     products = ProductSerializer(many=True, read_only=True, source='product_set')
 
     class Meta:
         model = Category
-        fields = ['id', 'name_uz','name_ru','name_en', 'image', 'products']
-
-
-# class CategorySerializer(serializers.ModelSerializer):
-#     class Meta:
-#         model = Category
-#         fields = ['id', 'name', 'image']
-#     # def to_representation(self, instance):
-#     #     representation = super().to_representation(instance)
-#     #     if hasattr(self.context.get('view'), 'action'):
-#     #         if self.context.get('view').action == 'retrieve':
-#     #             products_query = instance.product_set.all()
-#     #             products_data = ProductSerializer(products_query, many=True).data
-#     #             return {
-#     #                 **representation,
-#     #                 'products_count': len(products_data),
-#     #                 'products': products_data
-#     #             }
-#     #     return representation
+        fields = ['id', 'name_uz', 'name_ru', 'name_en', 'image', 'products']
 
 class BannerSerializer(serializers.ModelSerializer):
     class Meta:
         model = Banner
-        fields = ['id', 'color', 'description_uz','description_ru','description_en', 'image', 'product']
-
+        fields = ['id', 'color', 'description_uz', 'description_ru', 'description_en', 'image', 'product']
 
 class OrderItemSerializer(serializers.ModelSerializer):
     class Meta:
         model = OrderItem
-        fields = ['id','product', 'quantity']
+        fields = ['id', 'product', 'quantity']
 
 class OrderSerializer(serializers.ModelSerializer):
     products = OrderItemSerializer(many=True)
 
     class Meta:
         model = Order
-        fields = ['id','address_uz','address_ru','address_en', 'latitude_uz','latitude_ru', 'latitude_en','longitude_uz','longitude_ru','longitude_en', 'comment_uz','comment_ru','comment_en', 'products']
+        fields = ['id', 'address_uz', 'address_ru', 'address_en', 'latitude_uz', 'latitude_ru', 'latitude_en', 'longitude_uz', 'longitude_ru', 'longitude_en', 'comment_uz', 'comment_ru', 'comment_en', 'products']
 
     def create(self, validated_data):
         items_data = validated_data.pop('products')
