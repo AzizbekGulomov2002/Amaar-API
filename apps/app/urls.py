@@ -1,13 +1,17 @@
 from django.urls import path, include
 from rest_framework.routers import DefaultRouter
-from .views import CategoryViewSet, ProductViewSet, BannerViewSet, \
-    OrderDetailAPIView, OrderListAPIView, DashboardView, AllCategoryViewSet
+from .views import *
 
 router = DefaultRouter()
 router.register(r'categories', CategoryViewSet, basename='categories')
 router.register(r'all_categories', AllCategoryViewSet, basename='all_categories')
 router.register(r'products', ProductViewSet)
 router.register(r'banners', BannerViewSet)
+
+router.register(r'delivery-info', DeliveryInfoViewSet)
+router.register(r'policy-and-privacy', PolicyAndPrivacyViewSet)
+router.register(r'public-offer', PublicOfferViewSet)
+router.register(r'return-policy', ReturnPolicyViewSet)
 
 urlpatterns = [
     path('', include(router.urls)),

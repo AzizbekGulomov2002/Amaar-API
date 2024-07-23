@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Category, Product, Banner, Order, OrderItem
+from .models import *
 
 
 class OrderItemInline(admin.TabularInline):
@@ -36,3 +36,20 @@ class BannerAdmin(admin.ModelAdmin):
     list_display = ('color', 'product')
     search_fields = ('color', 'product__name_uz')
     # Additional configurations as needed
+
+
+@admin.register(DeliveryInfo)
+class DeliveryInfoAdmin(admin.ModelAdmin):
+    list_display = ('id', 'name_uz', 'name_ru', 'name_en')
+
+@admin.register(PolicyAndPrivacy)
+class PolicyAndPrivacyAdmin(admin.ModelAdmin):
+    list_display = ('id', 'name_uz', 'name_ru', 'name_en')
+
+@admin.register(PublicOffer)
+class PublicOfferAdmin(admin.ModelAdmin):
+    list_display = ('id', 'name_uz', 'name_ru', 'name_en')
+
+@admin.register(ReturnPolicy)
+class ReturnPolicyAdmin(admin.ModelAdmin):
+    list_display = ('id', 'name_uz', 'name_ru', 'name_en')

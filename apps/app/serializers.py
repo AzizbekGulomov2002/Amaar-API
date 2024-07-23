@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from apps.app.models import Banner, Category, Product, OrderItem, Order
+from apps.app.models import *
 
 class ProductSerializer(serializers.ModelSerializer):
     class Meta:
@@ -50,3 +50,25 @@ class DashboardSerializer(serializers.Serializer):
     top_products = serializers.ListField(child=serializers.DictField())
     top_users = serializers.ListField(child=serializers.DictField())
     top_categories = serializers.ListField(child=serializers.DictField())
+
+
+
+class DeliveryInfoSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = DeliveryInfo
+        fields = ['id', 'name_uz', 'name_ru', 'name_en']
+
+class PolicyAndPrivacySerializer(serializers.ModelSerializer):
+    class Meta:
+        model = PolicyAndPrivacy
+        fields = ['id', 'name_uz', 'name_ru', 'name_en']
+
+class PublicOfferSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = PublicOffer
+        fields = ['id', 'name_uz', 'name_ru', 'name_en']
+
+class ReturnPolicySerializer(serializers.ModelSerializer):
+    class Meta:
+        model = ReturnPolicy
+        fields = ['id', 'name_uz', 'name_ru', 'name_en']

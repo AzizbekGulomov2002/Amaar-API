@@ -1,6 +1,6 @@
 from django.db import models
 from apps.users.models import User
-
+from ckeditor.fields import RichTextField
 
 class Category(models.Model):
     name_uz = models.CharField(max_length=255, null=True, blank=True)
@@ -93,3 +93,36 @@ class OrderItem(models.Model):
         ordering = ['order']
         verbose_name = 'Order Item'
         verbose_name_plural = 'Order Items'
+
+
+class DeliveryInfo(models.Model):
+    name_uz = RichTextField()
+    name_ru = RichTextField()
+    name_en = RichTextField()
+
+    def __str__(self):
+        return self.name_uz[:50]  # Return first 50 characters of name_uz
+
+class PolicyAndPrivacy(models.Model):
+    name_uz = RichTextField()
+    name_ru = RichTextField()
+    name_en = RichTextField()
+
+    def __str__(self):
+        return self.name_uz[:50]  # Return first 50 characters of name_uz
+
+class PublicOffer(models.Model):
+    name_uz = RichTextField()
+    name_ru = RichTextField()
+    name_en = RichTextField()
+
+    def __str__(self):
+        return self.name_uz[:50]  # Return first 50 characters of name_uz
+
+class ReturnPolicy(models.Model):
+    name_uz = RichTextField()
+    name_ru = RichTextField()
+    name_en = RichTextField()
+
+    def __str__(self):
+        return self.name_uz[:50]  # Return first 50 characters of name_uz

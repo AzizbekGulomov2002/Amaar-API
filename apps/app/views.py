@@ -6,8 +6,8 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework.viewsets import ModelViewSet
 
-from .models import Banner, Category, Product, Order, OrderItem
-from .serializers import BannerSerializer, CategorySerializer, ProductSerializer, OrderSerializer, DashboardSerializer
+from .models import *
+from .serializers import *
 from ..users.models import User
 from django.utils.timezone import now
 from datetime import timedelta, date, datetime
@@ -107,7 +107,21 @@ class ProductViewSet(viewsets.ModelViewSet):
 
 
 
+class DeliveryInfoViewSet(viewsets.ModelViewSet):
+    queryset = DeliveryInfo.objects.all()
+    serializer_class = DeliveryInfoSerializer
 
+class PolicyAndPrivacyViewSet(viewsets.ModelViewSet):
+    queryset = PolicyAndPrivacy.objects.all()
+    serializer_class = PolicyAndPrivacySerializer
+
+class PublicOfferViewSet(viewsets.ModelViewSet):
+    queryset = PublicOffer.objects.all()
+    serializer_class = PublicOfferSerializer
+
+class ReturnPolicyViewSet(viewsets.ModelViewSet):
+    queryset = ReturnPolicy.objects.all()
+    serializer_class = ReturnPolicySerializer
 
 
 
