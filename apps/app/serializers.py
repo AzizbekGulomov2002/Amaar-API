@@ -58,52 +58,22 @@ class DeliveryInfoSerializer(serializers.ModelSerializer):
         model = DeliveryInfo
         fields = ['id', 'name_uz', 'name_ru', 'name_en']
 
-class DeliveryInfoListSerializer(serializers.ListSerializer):
-    child = DeliveryInfoSerializer()
-    allow_empty = False
-
-    def create(self, validated_data):
-        delivery_infos = [DeliveryInfo(**item) for item in validated_data]
-        return DeliveryInfo.objects.bulk_create(delivery_infos)
-
-
 
 class PolicyAndPrivacySerializer(serializers.ModelSerializer):
     class Meta:
         model = PolicyAndPrivacy
         fields = ['id', 'name_uz', 'name_ru', 'name_en']
 
-class PolicyAndPrivacyListSerializer(serializers.ListSerializer):
-    child = PolicyAndPrivacySerializer()
-    allow_empty = False
-
-    def create(self, validated_data):
-        policies = [PolicyAndPrivacy(**item) for item in validated_data]
-        return PolicyAndPrivacy.objects.bulk_create(policies)
 
 class PublicOfferSerializer(serializers.ModelSerializer):
     class Meta:
         model = PublicOffer
         fields = ['id', 'name_uz', 'name_ru', 'name_en']
 
-class PublicOfferListSerializer(serializers.ListSerializer):
-    child = PublicOfferSerializer()
-    allow_empty = False
-
-    def create(self, validated_data):
-        offers = [PublicOffer(**item) for item in validated_data]
-        return PublicOffer.objects.bulk_create(offers)
 
 class ReturnPolicySerializer(serializers.ModelSerializer):
     class Meta:
         model = ReturnPolicy
         fields = ['id', 'name_uz', 'name_ru', 'name_en']
 
-class ReturnPolicyListSerializer(serializers.ListSerializer):
-    child = ReturnPolicySerializer()
-    allow_empty = False
-
-    def create(self, validated_data):
-        return_policies = [ReturnPolicy(**item) for item in validated_data]
-        return ReturnPolicy.objects.bulk_create(return_policies)
 

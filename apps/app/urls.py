@@ -13,6 +13,13 @@ router.register(r'policy-and-privacy', PolicyAndPrivacyViewSet)
 router.register(r'public-offer', PublicOfferViewSet)
 router.register(r'return-policy', ReturnPolicyViewSet)
 
+
+router.register(r'delivery-info', DeliveryInfoViewSet)
+router.register(r'policy-and-privacy', PolicyAndPrivacyViewSet)
+router.register(r'public-offer', PublicOfferViewSet)
+router.register(r'return-policy', ReturnPolicyViewSet)
+
+
 urlpatterns = [
     path('', include(router.urls)),
     path('orders/', OrderListAPIView.as_view(), name='order-list-create'),

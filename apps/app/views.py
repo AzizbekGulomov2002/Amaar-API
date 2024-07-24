@@ -103,60 +103,21 @@ class ProductViewSet(viewsets.ModelViewSet):
 
 
 
-
-
-
 class DeliveryInfoViewSet(viewsets.ModelViewSet):
     queryset = DeliveryInfo.objects.all()
     serializer_class = DeliveryInfoSerializer
-
-    def get_serializer(self, *args, **kwargs):
-        if isinstance(kwargs.get('data', {}), list):
-            kwargs['many'] = True
-        return super(DeliveryInfoViewSet, self).get_serializer(*args, **kwargs)
-
-    def create(self, request, *args, **kwargs):
-        many = isinstance(request.data, list)
-        if many:
-            serializer = self.get_serializer(data=request.data, many=True)
-        else:
-            serializer = self.get_serializer(data=request.data)
-        serializer.is_valid(raise_exception=True)
-        self.perform_create(serializer)
-        headers = self.get_success_headers(serializer.data)
-        return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
-
-
 
 class PolicyAndPrivacyViewSet(viewsets.ModelViewSet):
     queryset = PolicyAndPrivacy.objects.all()
     serializer_class = PolicyAndPrivacySerializer
 
-    def get_serializer(self, *args, **kwargs):
-        if isinstance(kwargs.get('data', {}), list):
-            kwargs['many'] = True
-        return super(PolicyAndPrivacyViewSet, self).get_serializer(*args, **kwargs)
-
 class PublicOfferViewSet(viewsets.ModelViewSet):
     queryset = PublicOffer.objects.all()
     serializer_class = PublicOfferSerializer
 
-    def get_serializer(self, *args, **kwargs):
-        if isinstance(kwargs.get('data', {}), list):
-            kwargs['many'] = True
-        return super(PublicOfferViewSet, self).get_serializer(*args, **kwargs)
-
 class ReturnPolicyViewSet(viewsets.ModelViewSet):
     queryset = ReturnPolicy.objects.all()
     serializer_class = ReturnPolicySerializer
-
-    def get_serializer(self, *args, **kwargs):
-        if isinstance(kwargs.get('data', {}), list):
-            kwargs['many'] = True
-        return super(ReturnPolicyViewSet, self).get_serializer(*args, **kwargs)
-
-
-
 
 
 
