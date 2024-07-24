@@ -101,7 +101,7 @@ class DeliveryInfo(models.Model):
     name_en = RichTextField()
 
     def __str__(self):
-        return self.name_uz[:50]  # Return first 50 characters of name_uz
+        return self.name_uz[:50] 
 
 class PolicyAndPrivacy(models.Model):
     name_uz = RichTextField()
@@ -109,7 +109,7 @@ class PolicyAndPrivacy(models.Model):
     name_en = RichTextField()
 
     def __str__(self):
-        return self.name_uz[:50]  # Return first 50 characters of name_uz
+        return self.name_uz[:50] 
 
 class PublicOffer(models.Model):
     name_uz = RichTextField()
@@ -117,7 +117,7 @@ class PublicOffer(models.Model):
     name_en = RichTextField()
 
     def __str__(self):
-        return self.name_uz[:50]  # Return first 50 characters of name_uz
+        return self.name_uz[:50] 
 
 class ReturnPolicy(models.Model):
     name_uz = RichTextField()
@@ -125,4 +125,4 @@ class ReturnPolicy(models.Model):
     name_en = RichTextField()
 
     def __str__(self):
-        return self.name_uz[:50]  # Return first 50 characters of name_uz
+        return self.name_uz[:50] 
