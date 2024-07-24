@@ -8,11 +8,6 @@ router.register(r'all_categories', AllCategoryViewSet, basename='all_categories'
 router.register(r'products', ProductViewSet)
 router.register(r'banners', BannerViewSet)
 
-router.register(r'delivery-info', DeliveryInfoViewSet)
-router.register(r'policy-and-privacy', PolicyAndPrivacyViewSet)
-router.register(r'public-offer', PublicOfferViewSet)
-router.register(r'return-policy', ReturnPolicyViewSet)
-
 
 router.register(r'delivery-info', DeliveryInfoViewSet)
 router.register(r'policy-and-privacy', PolicyAndPrivacyViewSet)

@@ -107,13 +107,16 @@ class DeliveryInfoViewSet(viewsets.ModelViewSet):
     queryset = DeliveryInfo.objects.all()
     serializer_class = DeliveryInfoSerializer
 
+
 class PolicyAndPrivacyViewSet(viewsets.ModelViewSet):
     queryset = PolicyAndPrivacy.objects.all()
     serializer_class = PolicyAndPrivacySerializer
 
+
 class PublicOfferViewSet(viewsets.ModelViewSet):
     queryset = PublicOffer.objects.all()
     serializer_class = PublicOfferSerializer
+
 
 class ReturnPolicyViewSet(viewsets.ModelViewSet):
     queryset = ReturnPolicy.objects.all()
