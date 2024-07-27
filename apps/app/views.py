@@ -88,7 +88,7 @@ class CategoryViewSet(viewsets.ModelViewSet):
     filterset_class = CategoryFilter
     queryset = Category.objects.all().order_by('-id')
     serializer_class = CategorySerializer
-    permission_classes = [IsAuthenticated]
+    permission_classes = [AllowAny]
 
 
 class ProductViewSet(viewsets.ModelViewSet):
@@ -97,7 +97,7 @@ class ProductViewSet(viewsets.ModelViewSet):
     filterset_class = ProductFilter
     queryset = Product.objects.all().order_by('-id')
     serializer_class = ProductSerializer
-    permission_classes = [IsAuthenticated]
+    permission_classes = [AllowAny]
     search_fields = ['name_uz', 'name_ru', 'name_en', 'description_uz', 'description_ru', 'description_en']
     # ordering = ['-id']
 

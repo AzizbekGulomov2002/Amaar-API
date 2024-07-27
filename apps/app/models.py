@@ -30,6 +30,8 @@ class Product(models.Model):
     category = models.ForeignKey(Category, on_delete=models.CASCADE)
     images = models.JSONField(default=list, null=True, blank=True)
 
+    best_deals = models.BooleanField(default=False)
+
     def __str__(self):
         return self.name_uz or self.name_ru or self.name_en
 
