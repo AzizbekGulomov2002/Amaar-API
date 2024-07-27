@@ -102,7 +102,9 @@ class ProductViewSet(viewsets.ModelViewSet):
     # ordering = ['-id']
 
 
-
+class BestProductsListView(generics.ListAPIView):
+    queryset = Product.objects.filter(best_deals=True)
+    serializer_class = ProductSerializer
 
 
 

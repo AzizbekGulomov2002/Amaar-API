@@ -17,6 +17,7 @@ router.register(r'return-policy', ReturnPolicyViewSet)
 
 urlpatterns = [
     path('', include(router.urls)),
+    path('best_products/', BestProductsListView.as_view(), name='best-products'),
     path('orders/', OrderListAPIView.as_view(), name='order-list-create'),
     path('orders/<int:pk>/', OrderDetailAPIView.as_view(), name='order-detail'),
     path('dashboard/', DashboardView.as_view(), name='dashboard')
