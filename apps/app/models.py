@@ -28,7 +28,7 @@ class Product(models.Model):
 
     price = models.DecimalField(max_digits=10, decimal_places=2)
     category = models.ForeignKey(Category, on_delete=models.CASCADE)
-    images = models.JSONField(default=list, null=True, blank=True)
+    # images = models.JSONField(default=list, null=True, blank=True)
 
     best_deals = models.BooleanField(default=False)
 
@@ -39,6 +39,13 @@ class Product(models.Model):
         ordering = ['name_uz', 'name_ru', 'name_en']
         verbose_name = 'Product'
         verbose_name_plural = 'Products'
+
+
+class ProductImage(models.Model):
+    product = models.ForeignKey("Product", related_name='images', on_delete=models.CASCADE)
+    image = models.ImageField(upload_to='product_images/')
+    def __str__(self):
+        return f"Image for {self.product}"
 
 
 class Banner(models.Model):

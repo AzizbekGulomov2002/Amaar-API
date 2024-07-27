@@ -18,11 +18,22 @@ class OrderItemAdmin(admin.ModelAdmin):
     list_display = ('id', 'order', 'product', 'quantity')
     list_filter = ('order__address_uz', 'product__name_uz')
 
-@admin.register(Product)
+# @admin.register(Product)
+# class ProductAdmin(admin.ModelAdmin):
+#     list_display = ('name_uz', 'price', 'category')
+#     list_filter = ('category',)
+#     search_fields = ('name_uz',)
+
+
+class ProductImageInline(admin.TabularInline):
+    model = ProductImage
+    extra = 1
+
 class ProductAdmin(admin.ModelAdmin):
-    list_display = ('name_uz', 'price', 'category')
-    list_filter = ('category',)
-    search_fields = ('name_uz',)
+    inlines = [ProductImageInline]
+
+admin.site.register(Product, ProductAdmin)
+
 
 # Register Category model
 @admin.register(Category)

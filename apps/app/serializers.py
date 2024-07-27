@@ -1,10 +1,46 @@
 from rest_framework import serializers
 from apps.app.models import *
 
+
+class ProductImageSerializer(serializers.ModelSerializer):
+    image_url = serializers.SerializerMethodField()
+
+    class Meta:
+        model = ProductImage
+        fields = ['id', 'image_url']
+
+    def get_image_url(self, obj):
+        request = self.context.get('request')
+        if obj.image and hasattr(obj.image, 'url'):
+            return request.build_absolute_uri(obj.image.url)
+        return None
+    
+
+
 class ProductSerializer(serializers.ModelSerializer):
+    images = serializers.SerializerMethodField()
+
     class Meta:
         model = Product
-        fields = ['id', 'name_uz', 'name_ru', 'name_en', 'description_uz', 'description_ru', 'description_en', 'price', 'category', 'images','best_deals']
+        fields = ['id', 'name_uz', 'name_ru', 'name_en', 'description_uz', 'description_ru', 'description_en', 'price', 'category', 'images', 'best_deals']
+
+    def get_images(self, obj):
+        request = self.context.get('request')
+        images = obj.images.all()
+        return [request.build_absolute_uri(image.image.url) for image in images]
+
+    def create(self, validated_data):
+        request = self.context.get('request')
+        images = request.FILES.getlist('images')
+        product = Product.objects.create(**validated_data)
+        for image in images:
+            ProductImage.objects.create(product=product, image=image)
+        return product
+
+
+
+
+
 
 class CategorySerializer(serializers.ModelSerializer):
     products = ProductSerializer(many=True, read_only=True, source='product_set')
