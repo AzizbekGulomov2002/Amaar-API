@@ -14,7 +14,7 @@ from datetime import timedelta, date, datetime
 from rest_framework.pagination import BasePagination, PageNumberPagination
 from django_filters.rest_framework import DjangoFilterBackend
 from apps.app.filters import CategoryFilter, ProductFilter
-
+from rest_framework.decorators import action
 from django.conf import settings
 
 stripe.api_key = settings.STRIPE_SECRET_KEY
@@ -171,42 +171,23 @@ class OrderListAPIView(generics.ListCreateAPIView):
 
 class OrderHistoryViewSet(viewsets.ModelViewSet):
     queryset = OrderHistory.objects.all()
-    serializer_class = OrderHistorySerializer
-    permission_classes = [AllowAny]
 
-    def get_queryset(self):
-        user = self.request.user
-        return OrderHistory.objects.filter(user=user)
+    def get_serializer_class(self):
+        if self.action == 'retrieve':
+            return OrderHistoryBaseSerializers
+        return OrderHistoryIDSerializer
 
-    def list(self, request, *args, **kwargs):
-        queryset = self.get_queryset()
-        serializer = self.get_serializer(queryset, many=True, context={'request': request})
+    @action(detail=True, methods=['get'])
+    def orders(self, request, pk=None):
+        order_history = self.get_object()
+        serializer = OrderHistoryBaseSerializers(order_history)
         return Response(serializer.data)
 
-    def retrieve(self, request, *args, **kwargs):
-        instance = self.get_object()
-        serializer = self.get_serializer(instance, context={'request': request})
+    @action(detail=False, methods=['get'])
+    def all_orders(self, request):
+        order_histories = OrderHistory.objects.all()
+        serializer = OrderHistoryBaseSerializers(order_histories, many=True)
         return Response(serializer.data)
-
-    def create(self, request, *args, **kwargs):
-        serializer = self.get_serializer(data=request.data)
-        serializer.is_valid(raise_exception=True)
-        self.perform_create(serializer)
-        return Response(serializer.data, status=201)
-
-    def update(self, request, *args, **kwargs):
-        partial = kwargs.pop('partial', False)
-        instance = self.get_object()
-        serializer = self.get_serializer(instance, data=request.data, partial=partial)
-        serializer.is_valid(raise_exception=True)
-        self.perform_update(serializer)
-        return Response(serializer.data)
-
-    def destroy(self, request, *args, **kwargs):
-        instance = self.get_object()
-        self.perform_destroy(instance)
-        return Response(status=204)
-    
 
 
 class OrderDetailAPIView(generics.RetrieveUpdateDestroyAPIView):

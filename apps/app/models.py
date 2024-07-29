@@ -68,6 +68,20 @@ class Banner(models.Model):
 
 
 class Order(models.Model):
+
+    PENDING = 'pending'
+    SHIPPED = 'shipped'
+    DELIVERED = 'delivered'
+    CANCELED = 'canceled'
+    
+    STATUS_CHOICES = [
+        (PENDING, 'Pending'),  # waiting
+        (SHIPPED, 'Shipped'),
+        (DELIVERED, 'Delivered'),
+        (CANCELED, 'Canceled'),
+    ]
+
+    status = models.CharField(max_length=10, choices=STATUS_CHOICES, default=PENDING)
     address = models.CharField(max_length=255, null=True, blank=True)
     latitude = models.FloatField(null=True, blank=True)
     longitude = models.FloatField(null=True, blank=True)

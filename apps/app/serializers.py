@@ -63,7 +63,7 @@ class OrderSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Order
-        fields = ['id', 'address', 'latitude', 'longitude', 'comment', 'products', 'user','created_at']
+        fields = ['id', 'address', 'latitude', 'longitude', 'comment', 'products', 'user','created_at','status']
 
     def create(self, validated_data):
         products_data = validated_data.pop('products')
@@ -103,7 +103,7 @@ class OrderSerializer(serializers.ModelSerializer):
         return representation
 
 
-class OrderHistorySerializer(serializers.ModelSerializer):
+class OrderHistoryIDSerializer(serializers.ModelSerializer):
     class Meta:
         model = OrderHistory
         fields = ['id', 'order', 'user', 'date', 'status']
@@ -111,8 +111,21 @@ class OrderHistorySerializer(serializers.ModelSerializer):
     def to_representation(self, instance):
         representation = super().to_representation(instance)
         representation['user'] = UserSerializer(instance.user).data
-        # representation['order'] = OrderSerializer(instance.order, context=self.context).data
+        representation['order'] = instance.order.id
         return representation
+
+
+class OrderHistoryBaseSerializers(serializers.ModelSerializer):
+    class Meta:
+        model = OrderHistory
+        fields = ['id', 'order', 'user', 'date', 'status']
+
+    def to_representation(self, instance):
+        representation = super().to_representation(instance)
+        representation['user'] = UserSerializer(instance.user).data
+        # representation['order'] = OrderSerializer(instance.order).data
+        return representation
+
 
 
 
