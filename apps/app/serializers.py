@@ -1,5 +1,6 @@
 from rest_framework import serializers
 from apps.app.models import *
+from apps.users.serializers import UserSerializer
 
 
 class ProductImageSerializer(serializers.ModelSerializer):
@@ -15,7 +16,6 @@ class ProductImageSerializer(serializers.ModelSerializer):
             return request.build_absolute_uri(obj.image.url)
         return None
     
-
 
 class ProductSerializer(serializers.ModelSerializer):
     images = serializers.SerializerMethodField()
@@ -38,10 +38,6 @@ class ProductSerializer(serializers.ModelSerializer):
         return product
 
 
-
-
-
-
 class CategorySerializer(serializers.ModelSerializer):
     products = ProductSerializer(many=True, read_only=True, source='product_set')
 
@@ -54,24 +50,65 @@ class BannerSerializer(serializers.ModelSerializer):
         model = Banner
         fields = ['id', 'color', 'description_uz', 'description_ru', 'description_en', 'image', 'product']
 
+
 class OrderItemSerializer(serializers.ModelSerializer):
     class Meta:
         model = OrderItem
         fields = ['id', 'product', 'quantity']
 
+
 class OrderSerializer(serializers.ModelSerializer):
     products = OrderItemSerializer(many=True)
+    user = serializers.PrimaryKeyRelatedField(queryset=User.objects.all())  # Use PrimaryKeyRelatedField to handle user as ID
 
     class Meta:
         model = Order
-        fields = ['id', 'address_uz', 'address_ru', 'address_en', 'latitude_uz', 'latitude_ru', 'latitude_en', 'longitude_uz', 'longitude_ru', 'longitude_en', 'comment_uz', 'comment_ru', 'comment_en', 'products']
+        fields = ['id', 'address', 'latitude', 'longitude', 'comment', 'products', 'user','created_at']
 
     def create(self, validated_data):
-        items_data = validated_data.pop('products')
-        order = Order.objects.create(**validated_data)
-        for item_data in items_data:
-            OrderItem.objects.create(order=order, **item_data)
+        products_data = validated_data.pop('products')
+        user = validated_data.pop('user') 
+        order = Order.objects.create(user=user, **validated_data)
+        for product_data in products_data:
+            OrderItem.objects.create(order=order, **product_data)
         return order
+
+    def to_representation(self, instance):
+        request = self.context.get('request')  # Ensure request is available in context
+        representation = super().to_representation(instance)
+        representation['products'] = [
+            {
+                'id': item.product.id,
+                'name_uz': item.product.name_uz,
+                'name_ru': item.product.name_ru,
+                'name_en': item.product.name_en,
+                'description_uz': item.product.description_uz,
+                'description_ru': item.product.description_ru,
+                'description_en': item.product.description_en,
+                'amount': item.quantity,
+                'images': [
+                    request.build_absolute_uri(image.image.url)
+                    for image in item.product.images.all()
+                ]
+            } for item in instance.products.all()
+        ]
+        
+        # Add 'user' details
+        representation['user'] = {
+            'id': instance.user.id,
+            'name': instance.user.name,
+            'phone_number': instance.user.phone_number
+        } if instance.user else None
+        
+        return representation
+
+
+class OrderHistorySerializer(serializers.ModelSerializer):
+    class Meta:
+        model = OrderHistory
+        fields = ['id', 'order', 'user', 'date', 'status']
+
+
 
 class DashboardSerializer(serializers.Serializer):
     total_orders = serializers.IntegerField()

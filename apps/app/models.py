@@ -68,25 +68,12 @@ class Banner(models.Model):
 
 
 class Order(models.Model):
-    address_uz = models.CharField(max_length=255, null=True, blank=True)
-    address_ru = models.CharField(max_length=255, null=True, blank=True)
-    address_en = models.CharField(max_length=255, null=True, blank=True)
-
-    latitude_uz = models.FloatField(null=True, blank=True)
-    latitude_ru = models.FloatField(null=True, blank=True)
-    latitude_en = models.FloatField(null=True, blank=True)
-
-    longitude_uz = models.FloatField(null=True, blank=True)
-    longitude_ru = models.FloatField(null=True, blank=True)
-    longitude_en = models.FloatField(null=True, blank=True)
-
-    comment_uz = models.TextField(null=True, blank=True)
-    comment_ru = models.TextField(null=True, blank=True)
-    comment_en = models.TextField(null=True, blank=True)
-
+    address = models.CharField(max_length=255, null=True, blank=True)
+    latitude = models.FloatField(null=True, blank=True)
+    longitude = models.FloatField(null=True, blank=True)
+    comment = models.TextField(null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
-    user = models.ForeignKey(User, related_name='orders', on_delete=models.SET_NULL, null=True, blank=True)
-
+    user = models.ForeignKey(User, related_name='orders', on_delete=models.CASCADE)
     class Meta:
         ordering = ['-created_at']
         verbose_name = 'Order'
@@ -94,7 +81,7 @@ class Order(models.Model):
 
 
 class OrderItem(models.Model):
-    order = models.ForeignKey(Order, related_name='products', on_delete=models.CASCADE)
+    order = models.ForeignKey(Order, related_name='products', on_delete=models.CASCADE)  # Update related_name here
     product = models.ForeignKey(Product, on_delete=models.CASCADE)
     quantity = models.PositiveIntegerField()
 
@@ -102,6 +89,34 @@ class OrderItem(models.Model):
         ordering = ['order']
         verbose_name = 'Order Item'
         verbose_name_plural = 'Order Items'
+
+
+
+class OrderHistory(models.Model):
+    PENDING = 'pending'
+    SHIPPED = 'shipped'
+    DELIVERED = 'delivered'
+    CANCELED = 'canceled'
+    
+    STATUS_CHOICES = [
+        (PENDING, 'Pending'),
+        (SHIPPED, 'Shipped'),
+        (DELIVERED, 'Delivered'),
+        (CANCELED, 'Canceled'),
+    ]
+    
+    order = models.ForeignKey(Order, related_name='history', on_delete=models.CASCADE)
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    date = models.DateTimeField(auto_now_add=True)
+    status = models.CharField(max_length=10, choices=STATUS_CHOICES, default=PENDING)
+    
+    def __str__(self):
+        return f"OrderHistory for {self.order.id} - {self.status} on {self.date}"
+
+    class Meta:
+        ordering = ['-date']
+        verbose_name = 'Order History'
+        verbose_name_plural = 'Order Histories'
 
 
 class DeliveryInfo(models.Model):

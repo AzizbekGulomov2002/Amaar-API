@@ -8,15 +8,22 @@ class OrderItemInline(admin.TabularInline):
 
 @admin.register(Order)
 class OrderAdmin(admin.ModelAdmin):
-    list_display = ('id', 'address_uz')
-    search_fields = ('address_uz',)
+    list_display = ('id', 'address')
+    search_fields = ('address',)
     inlines = [OrderItemInline]
+
+
+@admin.register(OrderHistory)
+class OrderHistoryAdmin(admin.ModelAdmin):
+    list_display = ['order', 'user', 'date', 'status']
+    list_filter = ['status', 'date']
+    search_fields = ['order__id', 'user__username']
 
 # Register OrderItem model
 @admin.register(OrderItem)
 class OrderItemAdmin(admin.ModelAdmin):
     list_display = ('id', 'order', 'product', 'quantity')
-    list_filter = ('order__address_uz', 'product__name_uz')
+    list_filter = ('order__address', 'product')
 
 # @admin.register(Product)
 # class ProductAdmin(admin.ModelAdmin):

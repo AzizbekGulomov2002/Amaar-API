@@ -2,8 +2,7 @@
 from rest_framework import serializers
 from django.contrib.auth import authenticate, get_user_model
 from .models import User, Company
-from ..app.models import Order
-from ..app.serializers import OrderSerializer
+
 
 
 class RegisterSerializer(serializers.ModelSerializer):
@@ -40,8 +39,6 @@ class LoginSerializer(serializers.Serializer):
 #
 
 class UserSerializer(serializers.ModelSerializer):
-    # history = serializers.ReadOnlyField(source='get_history')
-
     class Meta:
         model = User
         fields = ['phone_number', 'name', 'is_active', 'is_staff', 'date_joined', 'company']

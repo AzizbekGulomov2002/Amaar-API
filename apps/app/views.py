@@ -48,40 +48,7 @@ class AllCategoryViewSet(viewsets.ModelViewSet):
         return queryset
 
 
-# class CategoryViewSet(viewsets.ModelViewSet):
-#     queryset = Category.objects.all().order_by('-id')
-#     serializer_class = CategorySerializer
-#     permission_classes = [IsAuthenticated]
-#     pagination_class = BasePagination
-#     filter_backends = [DjangoFilterBackend, filters.OrderingFilter, filters.SearchFilter]
-#     filterset_class = CategoryFilter
-#     ordering_fields = ['name']
-#     search_fields = ['name']
-#     basename = 'category'
-#
-#     def create(self, request, *args, **kwargs):
-#         serializer = self.get_serializer(data=request.data)
-#         if serializer.is_valid():
-#             serializer.save()
-#             return Response(serializer.data, status=status.HTTP_201_CREATED)
-#         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-#
-#     def update(self, request, *args, **kwargs):
-#         instance = self.get_object()
-#         serializer = self.get_serializer(instance, data=request.data)
-#         if serializer.is_valid():
-#             serializer.save()
-#             return Response(serializer.data)
-#         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-#
-#     def destroy(self, request, *args, **kwargs):
-#         instance = self.get_object()
-#         instance.delete()
-#         return Response(status=status.HTTP_204_NO_CONTENT)
-#
-#
 
-#
 class CategoryViewSet(viewsets.ModelViewSet):
     pagination_class = BasePagination
     filter_backends = [DjangoFilterBackend, filters.OrderingFilter, filters.SearchFilter]
@@ -142,6 +109,17 @@ class OrderListAPIView(generics.ListCreateAPIView):
     queryset = Order.objects.all().order_by('-id')
     serializer_class = OrderSerializer
     permission_classes = [IsAuthenticated]
+
+
+class OrderHistoryViewSet(viewsets.ModelViewSet):
+    queryset = OrderHistory.objects.all()
+    serializer_class = OrderHistorySerializer
+    permission_classes = [IsAuthenticated]
+
+    def get_queryset(self):
+        user = self.request.user
+        return OrderHistory.objects.filter(user=user)
+
 
 class OrderDetailAPIView(generics.RetrieveUpdateDestroyAPIView):
     queryset = Order.objects.all()

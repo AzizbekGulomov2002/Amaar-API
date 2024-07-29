@@ -14,7 +14,7 @@ router.register(r'policy-and-privacy', PolicyAndPrivacyViewSet)
 router.register(r'public-offer', PublicOfferViewSet)
 router.register(r'return-policy', ReturnPolicyViewSet)
 
-
+router.register(r'order-history', OrderHistoryViewSet, basename='orderhistory')
 urlpatterns = [
     path('', include(router.urls)),
     path('best_products/', BestProductsListView.as_view(), name='best-products'),
