@@ -174,8 +174,8 @@ class OrderHistoryViewSet(viewsets.ModelViewSet):
 
     def get_serializer_class(self):
         if self.action == 'retrieve':
-            return OrderHistoryBaseSerializers
-        return OrderHistoryIDSerializer
+            return  OrderHistoryIDSerializer
+        return OrderHistoryBaseSerializers
 
     @action(detail=True, methods=['get'])
     def orders(self, request, pk=None):
