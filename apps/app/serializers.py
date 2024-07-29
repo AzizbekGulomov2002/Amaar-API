@@ -74,7 +74,7 @@ class OrderSerializer(serializers.ModelSerializer):
         return order
 
     def to_representation(self, instance):
-        request = self.context.get('request')  # Ensure request is available in context
+        request = self.context.get('request')
         representation = super().to_representation(instance)
         representation['products'] = [
             {
@@ -89,7 +89,7 @@ class OrderSerializer(serializers.ModelSerializer):
                 'images': [
                     request.build_absolute_uri(image.image.url)
                     for image in item.product.images.all()
-                ]
+                ] if request else []
             } for item in instance.products.all()
         ]
         
@@ -107,6 +107,19 @@ class OrderHistorySerializer(serializers.ModelSerializer):
     class Meta:
         model = OrderHistory
         fields = ['id', 'order', 'user', 'date', 'status']
+
+    def to_representation(self, instance):
+        representation = super().to_representation(instance)
+        representation['user'] = UserSerializer(instance.user).data
+        # representation['order'] = OrderSerializer(instance.order, context=self.context).data
+        return representation
+
+
+
+class PaymentSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Payment
+        fields = ['id', 'order', 'stripe_charge_id', 'amount', 'created_at']
 
 
 

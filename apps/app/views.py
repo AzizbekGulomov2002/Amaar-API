@@ -5,7 +5,7 @@ from rest_framework.permissions import IsAuthenticatedOrReadOnly, AllowAny, IsAu
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework.viewsets import ModelViewSet
-
+import stripe
 from .models import *
 from .serializers import *
 from ..users.models import User
@@ -14,6 +14,59 @@ from datetime import timedelta, date, datetime
 from rest_framework.pagination import BasePagination, PageNumberPagination
 from django_filters.rest_framework import DjangoFilterBackend
 from apps.app.filters import CategoryFilter, ProductFilter
+
+from django.conf import settings
+
+stripe.api_key = settings.STRIPE_SECRET_KEY
+
+
+
+class CreatePaymentView(APIView):
+    def post(self, request, *args, **kwargs):
+        order_id = request.data.get('order_id')
+        order = Order.objects.get(id=order_id)
+        amount = int(order.total_quantity * 100)
+        try:
+            charge = stripe.Charge.create(
+                amount=amount,
+                currency='usd',
+                description=f'Order {order_id}',
+                source=request.data.get('stripe_token')
+            )
+            payment = Payment.objects.create(
+                order=order,
+                stripe_charge_id=charge['id'],
+                amount=order.total_quantity
+            )
+            return Response(PaymentSerializer(payment).data, status=status.HTTP_201_CREATED)
+        except stripe.error.StripeError as e:
+            return Response({'error': str(e)}, status=status.HTTP_400_BAD_REQUEST)
+
+class StripeWebhookView(APIView):
+    def post(self, request, *args, **kwargs):
+        payload = request.body
+        sig_header = request.META['HTTP_STRIPE_SIGNATURE']
+        event = None
+        try:
+            event = stripe.Webhook.construct_event(
+                payload, sig_header, settings.STRIPE_WEBHOOK_SECRET
+            )
+        except ValueError as e:
+            return Response(status=status.HTTP_400_BAD_REQUEST)
+        except stripe.error.SignatureVerificationError as e:
+            return Response(status=status.HTTP_400_BAD_REQUEST)
+        if event['type'] == 'charge.succeeded':
+            charge = event['data']['object']
+            order_id = charge['description'].split(' ')[1]
+            order = Order.objects.get(id=order_id)
+            Payment.objects.create(
+                order=order,
+                stripe_charge_id=charge['id'],
+                amount=charge['amount'] / 100  # Convert cents to dollars
+            )
+
+        return Response(status=status.HTTP_200_OK)
+
 
 
 class BasePagination(PageNumberPagination):
@@ -46,6 +99,11 @@ class AllCategoryViewSet(viewsets.ModelViewSet):
     def get_queryset(self):
         queryset = Category.objects.all()
         return queryset
+
+
+
+
+
 
 
 
@@ -114,11 +172,41 @@ class OrderListAPIView(generics.ListCreateAPIView):
 class OrderHistoryViewSet(viewsets.ModelViewSet):
     queryset = OrderHistory.objects.all()
     serializer_class = OrderHistorySerializer
-    permission_classes = [IsAuthenticated]
+    permission_classes = [AllowAny]
 
     def get_queryset(self):
         user = self.request.user
         return OrderHistory.objects.filter(user=user)
+
+    def list(self, request, *args, **kwargs):
+        queryset = self.get_queryset()
+        serializer = self.get_serializer(queryset, many=True, context={'request': request})
+        return Response(serializer.data)
+
+    def retrieve(self, request, *args, **kwargs):
+        instance = self.get_object()
+        serializer = self.get_serializer(instance, context={'request': request})
+        return Response(serializer.data)
+
+    def create(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        self.perform_create(serializer)
+        return Response(serializer.data, status=201)
+
+    def update(self, request, *args, **kwargs):
+        partial = kwargs.pop('partial', False)
+        instance = self.get_object()
+        serializer = self.get_serializer(instance, data=request.data, partial=partial)
+        serializer.is_valid(raise_exception=True)
+        self.perform_update(serializer)
+        return Response(serializer.data)
+
+    def destroy(self, request, *args, **kwargs):
+        instance = self.get_object()
+        self.perform_destroy(instance)
+        return Response(status=204)
+    
 
 
 class OrderDetailAPIView(generics.RetrieveUpdateDestroyAPIView):

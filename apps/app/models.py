@@ -78,6 +78,10 @@ class Order(models.Model):
         ordering = ['-created_at']
         verbose_name = 'Order'
         verbose_name_plural = 'Orders'
+    
+    @property
+    def total_quantity(self):
+        return sum(item.quantity for item in self.products.all())
 
 
 class OrderItem(models.Model):
@@ -92,31 +96,60 @@ class OrderItem(models.Model):
 
 
 
+# class OrderHistory(models.Model):
+#     PENDING = 'pending'
+#     SHIPPED = 'shipped'
+#     DELIVERED = 'delivered'
+#     CANCELED = 'canceled'
+    
+#     STATUS_CHOICES = [
+#         (PENDING, 'Pending'),
+#         (SHIPPED, 'Shipped'),
+#         (DELIVERED, 'Delivered'),
+#         (CANCELED, 'Canceled'),
+#     ]
+    
+#     order = models.ForeignKey(Order, related_name='history', on_delete=models.CASCADE)
+#     user = models.ForeignKey(User, on_delete=models.CASCADE)
+#     date = models.DateTimeField(auto_now_add=True)
+#     status = models.CharField(max_length=10, choices=STATUS_CHOICES, default=PENDING)
+    
+#     def __str__(self):
+#         return f"OrderHistory - {self.status} on {self.date}"
+
+#     class Meta:
+#         ordering = ['-date']
+#         verbose_name = 'Order History'
+#         verbose_name_plural = 'Order Histories'
+
+
+
 class OrderHistory(models.Model):
-    PENDING = 'pending'
-    SHIPPED = 'shipped'
-    DELIVERED = 'delivered'
-    CANCELED = 'canceled'
-    
-    STATUS_CHOICES = [
-        (PENDING, 'Pending'),
-        (SHIPPED, 'Shipped'),
-        (DELIVERED, 'Delivered'),
-        (CANCELED, 'Canceled'),
-    ]
-    
-    order = models.ForeignKey(Order, related_name='history', on_delete=models.CASCADE)
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    user = models.ForeignKey(User, related_name='order_histories', on_delete=models.CASCADE)
+    order = models.ForeignKey(Order, on_delete=models.CASCADE)
     date = models.DateTimeField(auto_now_add=True)
-    status = models.CharField(max_length=10, choices=STATUS_CHOICES, default=PENDING)
-    
-    def __str__(self):
-        return f"OrderHistory for {self.order.id} - {self.status} on {self.date}"
+    status = models.CharField(max_length=100)
 
     class Meta:
-        ordering = ['-date']
         verbose_name = 'Order History'
         verbose_name_plural = 'Order Histories'
+        ordering = ['-date']
+
+
+class Payment(models.Model):
+    order = models.ForeignKey(Order, related_name='payments', on_delete=models.CASCADE)
+    stripe_charge_id = models.CharField(max_length=255)
+    amount = models.DecimalField(max_digits=10, decimal_places=2)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ['-created_at']
+        verbose_name = 'Payment'
+        verbose_name_plural = 'Payments'
+
+
+
+
 
 
 class DeliveryInfo(models.Model):

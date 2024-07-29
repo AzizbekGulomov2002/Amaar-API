@@ -17,6 +17,11 @@ router.register(r'return-policy', ReturnPolicyViewSet)
 router.register(r'order-history', OrderHistoryViewSet, basename='orderhistory')
 urlpatterns = [
     path('', include(router.urls)),
+
+    path('create-payment/', CreatePaymentView.as_view(), name='create-payment'),
+    path('stripe-webhook/', StripeWebhookView.as_view(), name='stripe-webhook'),
+
+
     path('best_products/', BestProductsListView.as_view(), name='best-products'),
     path('orders/', OrderListAPIView.as_view(), name='order-list-create'),
     path('orders/<int:pk>/', OrderDetailAPIView.as_view(), name='order-detail'),
