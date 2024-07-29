@@ -111,7 +111,7 @@ class OrderHistoryIDSerializer(serializers.ModelSerializer):
     def to_representation(self, instance):
         representation = super().to_representation(instance)
         representation['user'] = UserSerializer(instance.user).data
-        representation['order'] = instance.order.id
+        representation['order'] = OrderSerializer(instance.order).data
         return representation
 
 
