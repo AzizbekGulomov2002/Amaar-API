@@ -169,17 +169,6 @@ class OrderListAPIView(generics.ListCreateAPIView):
     permission_classes = [AllowAny]
 
 
-class UserOrderListAPIView(APIView):
-    permission_classes = [AllowAny]
-
-    def get(self, request, user_id=None):
-        if user_id is not None:
-            orders = Order.objects.filter(user_id=user_id)
-            serializer = OrderSerializer(orders, many=True, context={'request': request})
-            return Response(serializer.data)
-        return Response({"detail": "user_id query parameter is required."}, status=400)
-    
-
 class OrderHistoryViewSet(viewsets.ModelViewSet):
     queryset = OrderHistory.objects.all()
 
@@ -200,19 +189,32 @@ class OrderHistoryViewSet(viewsets.ModelViewSet):
         serializer = OrderHistoryBaseSerializers(order_histories, many=True)
         return Response(serializer.data)
 
-    @action(detail=False, methods=['get'], url_path='user-orders/(?P<user_id>\d+)')
-    def user_orders(self, request, user_id=None):
-        if user_id is not None:
-            order_histories = OrderHistory.objects.filter(user_id=user_id)
-            serializer = OrderHistoryBaseSerializers(order_histories, many=True)
-            return Response(serializer.data)
-        return Response({"detail": "user_id query parameter is required."}, status=400)
+class UserOrderHistoryAPIView(generics.ListAPIView):
+    permission_classes = [AllowAny]
+    serializer_class = OrderSerializer
+
+    def get_queryset(self):
+        user_id = self.kwargs['user_id']
+        return Order.objects.filter(user_id=user_id).order_by('-id')
+
+    def list(self, request, *args, **kwargs):
+        queryset = self.get_queryset()
+        orders_serializer = self.get_serializer(queryset, many=True, context={'request': request})
+
+        order_history_data = []
+        for order_data in orders_serializer.data:
+            order_id = order_data['id']
+            order_histories = OrderHistory.objects.filter(order_id=order_id)
+            order_histories_serializer = OrderHistoryBaseSerializers(order_histories, many=True, context={'request': request})
+            order_data['order_histories'] = order_histories_serializer.data
+            order_history_data.append(order_data)
+
+        return Response(order_history_data)
 
 class OrderDetailAPIView(generics.RetrieveUpdateDestroyAPIView):
     queryset = Order.objects.all()
     serializer_class = OrderSerializer
     permission_classes = [IsAuthenticated]
-
 
 
 
