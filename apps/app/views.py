@@ -147,6 +147,28 @@ class BannerViewSet(viewsets.ModelViewSet):
 
 
 
+class OrderHistoryViewSet(viewsets.ModelViewSet):
+    queryset = OrderHistory.objects.all()
+
+    def get_serializer_class(self):
+        if self.action == 'retrieve':
+            return OrderHistoryIDSerializer
+        return OrderHistoryBaseSerializers
+
+    @action(detail=True, methods=['get'])
+    def orders(self, request, pk=None):
+        order_history = self.get_object()
+        serializer = OrderHistoryBaseSerializers(order_history)
+        return Response(serializer.data)
+
+    @action(detail=False, methods=['get'])
+    def all_orders(self, request):
+        order_histories = OrderHistory.objects.all()
+        serializer = OrderHistoryBaseSerializers(order_histories, many=True)
+        return Response(serializer.data)
+
+
+
 class UserOrderHistoryAPIView(generics.ListAPIView):
     permission_classes = [AllowAny]
     serializer_class = OrderSerializer
@@ -160,33 +182,6 @@ class UserOrderHistoryAPIView(generics.ListAPIView):
         orders_serializer = self.get_serializer(queryset, many=True, context={'request': request})
         return Response(orders_serializer.data)
     
-
-
-class OrderHistoryBaseSerializers(serializers.ModelSerializer):
-    class Meta:
-        model = OrderHistory
-        fields = ['id', 'order', 'user', 'date', 'status']
-
-    def create(self, validated_data):
-        order_history = super().create(validated_data)
-        # Update the order status
-        order = order_history.order
-        order.status = order_history.status
-        order.save()
-        return order_history
-
-    def update(self, instance, validated_data):
-        instance = super().update(instance, validated_data)
-        # Update the order status
-        order = instance.order
-        order.status = instance.status
-        order.save()
-        return instance
-
-    def to_representation(self, instance):
-        representation = super().to_representation(instance)
-        representation['user'] = UserSerializer(instance.user).data
-        return representation
 
 
 class OrderListAPIView(generics.ListCreateAPIView):

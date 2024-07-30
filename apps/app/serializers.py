@@ -150,6 +150,7 @@ class OrderHistoryIDSerializer(serializers.ModelSerializer):
         return representation
 
 
+
 class OrderHistoryBaseSerializers(serializers.ModelSerializer):
     class Meta:
         model = OrderHistory
@@ -164,7 +165,6 @@ class OrderHistoryBaseSerializers(serializers.ModelSerializer):
         return order_history
 
     def update(self, instance, validated_data):
-        # Update the order history instance
         instance = super().update(instance, validated_data)
         # Update the order status
         order = instance.order
@@ -176,6 +176,34 @@ class OrderHistoryBaseSerializers(serializers.ModelSerializer):
         representation = super().to_representation(instance)
         representation['user'] = UserSerializer(instance.user).data
         return representation
+    
+    
+# class OrderHistoryBaseSerializers(serializers.ModelSerializer):
+#     class Meta:
+#         model = OrderHistory
+#         fields = ['id', 'order', 'user', 'date', 'status']
+
+#     def create(self, validated_data):
+#         order_history = super().create(validated_data)
+#         # Update the order status
+#         order = order_history.order
+#         order.status = order_history.status
+#         order.save()
+#         return order_history
+
+#     def update(self, instance, validated_data):
+#         # Update the order history instance
+#         instance = super().update(instance, validated_data)
+#         # Update the order status
+#         order = instance.order
+#         order.status = instance.status
+#         order.save()
+#         return instance
+
+#     def to_representation(self, instance):
+#         representation = super().to_representation(instance)
+#         representation['user'] = UserSerializer(instance.user).data
+#         return representation
 
 
 
