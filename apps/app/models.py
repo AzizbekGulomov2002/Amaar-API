@@ -110,33 +110,6 @@ class OrderItem(models.Model):
 
 
 
-# class OrderHistory(models.Model):
-#     PENDING = 'pending'
-#     SHIPPED = 'shipped'
-#     DELIVERED = 'delivered'
-#     CANCELED = 'canceled'
-    
-#     STATUS_CHOICES = [
-#         (PENDING, 'Pending'),
-#         (SHIPPED, 'Shipped'),
-#         (DELIVERED, 'Delivered'),
-#         (CANCELED, 'Canceled'),
-#     ]
-    
-#     order = models.ForeignKey(Order, related_name='history', on_delete=models.CASCADE)
-#     user = models.ForeignKey(User, on_delete=models.CASCADE)
-#     date = models.DateTimeField(auto_now_add=True)
-#     status = models.CharField(max_length=10, choices=STATUS_CHOICES, default=PENDING)
-    
-#     def __str__(self):
-#         return f"OrderHistory - {self.status} on {self.date}"
-
-#     class Meta:
-#         ordering = ['-date']
-#         verbose_name = 'Order History'
-#         verbose_name_plural = 'Order Histories'
-
-
 
 class OrderHistory(models.Model):
     user = models.ForeignKey(User, related_name='order_histories', on_delete=models.CASCADE)

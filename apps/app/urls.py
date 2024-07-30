@@ -25,7 +25,7 @@ urlpatterns = [
     path('best_products/', BestProductsListView.as_view(), name='best-products'),
     path('best_products/', BestProductsListView.as_view(), name='best-products'),
 
-    
+
     path('orders/', OrderListAPIView.as_view(), name='order-list'),
     path('orders/<int:pk>/', OrderDetailAPIView.as_view(), name='order-detail'),
     path('order-history/users/<int:user_id>/', UserOrderHistoryAPIView.as_view(), name='user-order-history'),

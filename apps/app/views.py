@@ -160,15 +160,6 @@ class BannerViewSet(viewsets.ModelViewSet):
 
 
 
-
-
-
-class OrderListAPIView(generics.ListCreateAPIView):
-    queryset = Order.objects.all().order_by('-id')
-    serializer_class = OrderSerializer
-    permission_classes = [AllowAny]
-
-
 class OrderHistoryViewSet(viewsets.ModelViewSet):
     queryset = OrderHistory.objects.all()
 
@@ -200,22 +191,17 @@ class UserOrderHistoryAPIView(generics.ListAPIView):
     def list(self, request, *args, **kwargs):
         queryset = self.get_queryset()
         orders_serializer = self.get_serializer(queryset, many=True, context={'request': request})
+        return Response(orders_serializer.data)
 
-        order_history_data = []
-        for order_data in orders_serializer.data:
-            order_id = order_data['id']
-            order_histories = OrderHistory.objects.filter(order_id=order_id)
-            order_histories_serializer = OrderHistoryBaseSerializers(order_histories, many=True, context={'request': request})
-            order_data['order_histories'] = order_histories_serializer.data
-            order_history_data.append(order_data)
-
-        return Response(order_history_data)
+class OrderListAPIView(generics.ListCreateAPIView):
+    queryset = Order.objects.all().order_by('-id')
+    serializer_class = OrderSerializer
+    permission_classes = [AllowAny]
 
 class OrderDetailAPIView(generics.RetrieveUpdateDestroyAPIView):
     queryset = Order.objects.all()
     serializer_class = OrderSerializer
-    permission_classes = [IsAuthenticated]
-
+    permission_classes = [AllowAny]
 
 
 class DashboardView(APIView):
