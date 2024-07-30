@@ -152,29 +152,40 @@ class ReturnPolicyViewSet(viewsets.ModelViewSet):
     queryset = ReturnPolicy.objects.all()
     serializer_class = ReturnPolicySerializer
 
-
-
-
-
-
 class BannerViewSet(viewsets.ModelViewSet):
     queryset = Banner.objects.all().order_by('-id')
     serializer_class = BannerSerializer
     permission_classes = [IsAuthenticated]
 
 
+
+
+
+
+
 class OrderListAPIView(generics.ListCreateAPIView):
     queryset = Order.objects.all().order_by('-id')
     serializer_class = OrderSerializer
-    permission_classes = [IsAuthenticated]
+    permission_classes = [AllowAny]
 
+
+class UserOrderListAPIView(APIView):
+    permission_classes = [AllowAny]
+
+    def get(self, request, user_id=None):
+        if user_id is not None:
+            orders = Order.objects.filter(user_id=user_id)
+            serializer = OrderSerializer(orders, many=True, context={'request': request})
+            return Response(serializer.data)
+        return Response({"detail": "user_id query parameter is required."}, status=400)
+    
 
 class OrderHistoryViewSet(viewsets.ModelViewSet):
     queryset = OrderHistory.objects.all()
 
     def get_serializer_class(self):
         if self.action == 'retrieve':
-            return  OrderHistoryIDSerializer
+            return OrderHistoryIDSerializer
         return OrderHistoryBaseSerializers
 
     @action(detail=True, methods=['get'])
@@ -189,11 +200,20 @@ class OrderHistoryViewSet(viewsets.ModelViewSet):
         serializer = OrderHistoryBaseSerializers(order_histories, many=True)
         return Response(serializer.data)
 
+    @action(detail=False, methods=['get'], url_path='user-orders/(?P<user_id>\d+)')
+    def user_orders(self, request, user_id=None):
+        if user_id is not None:
+            order_histories = OrderHistory.objects.filter(user_id=user_id)
+            serializer = OrderHistoryBaseSerializers(order_histories, many=True)
+            return Response(serializer.data)
+        return Response({"detail": "user_id query parameter is required."}, status=400)
 
 class OrderDetailAPIView(generics.RetrieveUpdateDestroyAPIView):
     queryset = Order.objects.all()
     serializer_class = OrderSerializer
     permission_classes = [IsAuthenticated]
+
+
 
 
 class DashboardView(APIView):

@@ -14,7 +14,7 @@ router.register(r'policy-and-privacy', PolicyAndPrivacyViewSet)
 router.register(r'public-offer', PublicOfferViewSet)
 router.register(r'return-policy', ReturnPolicyViewSet)
 
-router.register(r'order-history', OrderHistoryViewSet, basename='orderhistory')
+router.register(r'order-history', OrderHistoryViewSet, basename='order-history')
 urlpatterns = [
     path('', include(router.urls)),
 
@@ -23,7 +23,11 @@ urlpatterns = [
 
 
     path('best_products/', BestProductsListView.as_view(), name='best-products'),
-    path('orders/', OrderListAPIView.as_view(), name='order-list-create'),
+
+    path('orders/', OrderListAPIView.as_view(), name='order-list'),
     path('orders/<int:pk>/', OrderDetailAPIView.as_view(), name='order-detail'),
+    path('orders/user/<int:user_id>/', UserOrderListAPIView.as_view(), name='user-order-list'),
+
+
     path('dashboard/', DashboardView.as_view(), name='dashboard')
 ]

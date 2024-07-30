@@ -41,7 +41,7 @@ class LoginSerializer(serializers.Serializer):
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
-        fields = ['phone_number', 'name', 'is_active', 'is_staff', 'date_joined', 'company']
+        fields = ['id','phone_number', 'name', 'is_active', 'is_staff', 'date_joined', 'company']
 
 class CompanySerializer(serializers.ModelSerializer):
     class Meta:

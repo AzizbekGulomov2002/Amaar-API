@@ -51,23 +51,33 @@ class BannerSerializer(serializers.ModelSerializer):
         fields = ['id', 'color', 'description_uz', 'description_ru', 'description_en', 'image', 'product']
 
 
+
+
+
+
+
+
+
 class OrderItemSerializer(serializers.ModelSerializer):
     class Meta:
         model = OrderItem
         fields = ['id', 'product', 'quantity']
 
 
+
+
+
 class OrderSerializer(serializers.ModelSerializer):
     products = OrderItemSerializer(many=True)
-    user = serializers.PrimaryKeyRelatedField(queryset=User.objects.all())  # Use PrimaryKeyRelatedField to handle user as ID
+    user = serializers.PrimaryKeyRelatedField(queryset=User.objects.all())
 
     class Meta:
         model = Order
-        fields = ['id', 'address', 'latitude', 'longitude', 'comment', 'products', 'user','created_at','status']
+        fields = ['id', 'address', 'latitude', 'longitude', 'comment', 'products', 'user', 'created_at', 'status']
 
     def create(self, validated_data):
         products_data = validated_data.pop('products')
-        user = validated_data.pop('user') 
+        user = validated_data.pop('user')
         order = Order.objects.create(user=user, **validated_data)
         for product_data in products_data:
             OrderItem.objects.create(order=order, **product_data)
@@ -92,16 +102,14 @@ class OrderSerializer(serializers.ModelSerializer):
                 ] if request else []
             } for item in instance.products.all()
         ]
-        
-        # Add 'user' details
+
         representation['user'] = {
             'id': instance.user.id,
             'name': instance.user.name,
             'phone_number': instance.user.phone_number
         } if instance.user else None
-        
-        return representation
 
+        return representation
 
 class OrderHistoryIDSerializer(serializers.ModelSerializer):
     class Meta:
@@ -114,7 +122,6 @@ class OrderHistoryIDSerializer(serializers.ModelSerializer):
         representation['order'] = OrderSerializer(instance.order).data
         return representation
 
-
 class OrderHistoryBaseSerializers(serializers.ModelSerializer):
     class Meta:
         model = OrderHistory
@@ -123,8 +130,11 @@ class OrderHistoryBaseSerializers(serializers.ModelSerializer):
     def to_representation(self, instance):
         representation = super().to_representation(instance)
         representation['user'] = UserSerializer(instance.user).data
-        # representation['order'] = OrderSerializer(instance.order).data
         return representation
+
+
+
+
 
 
 
