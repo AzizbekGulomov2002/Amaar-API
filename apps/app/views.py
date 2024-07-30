@@ -19,8 +19,6 @@ from django.conf import settings
 
 stripe.api_key = settings.STRIPE_SECRET_KEY
 
-
-
 class CreatePaymentView(APIView):
     def post(self, request, *args, **kwargs):
         order_id = request.data.get('order_id')
@@ -67,8 +65,6 @@ class StripeWebhookView(APIView):
 
         return Response(status=status.HTTP_200_OK)
 
-
-
 class BasePagination(PageNumberPagination):
     page_size = 10
     page_size_query_param = 'page_size'
@@ -100,13 +96,6 @@ class AllCategoryViewSet(viewsets.ModelViewSet):
         queryset = Category.objects.all()
         return queryset
 
-
-
-
-
-
-
-
 class CategoryViewSet(viewsets.ModelViewSet):
     pagination_class = BasePagination
     filter_backends = [DjangoFilterBackend, filters.OrderingFilter, filters.SearchFilter]
@@ -124,13 +113,11 @@ class ProductViewSet(viewsets.ModelViewSet):
     serializer_class = ProductSerializer
     permission_classes = [AllowAny]
     search_fields = ['name_uz', 'name_ru', 'name_en', 'description_uz', 'description_ru', 'description_en']
-    # ordering = ['-id']
 
 
 class BestProductsListView(generics.ListAPIView):
     queryset = Product.objects.filter(best_deals=True)
     serializer_class = ProductSerializer
-
 
 
 class DeliveryInfoViewSet(viewsets.ModelViewSet):
@@ -202,6 +189,29 @@ class OrderDetailAPIView(generics.RetrieveUpdateDestroyAPIView):
     queryset = Order.objects.all()
     serializer_class = OrderSerializer
     permission_classes = [AllowAny]
+
+
+# class PaymentLinkViewSet(generics.GenericAPIView):
+#     serializer_class = GeneratePaymentLinkSerializer
+#     def post(self, request, *args, **kwargs):
+#         order_id = request.data.get("order_id")
+#         order_id.objects.get(Order)
+
+
+
+class PaymentLinkViewSet(generics.GenericAPIView):
+    serializer_class = GeneratePaymentLinkSerializer
+    def post(self, request, *args, **kwargs):
+        order_id = request.data.get("order_id")
+        if not order_id:
+            return Response({"error":"order id is required"}, status=status.HTTP_400_BAD_REQUEST)
+        try:
+            order = Order.objects.get(id=order_id)
+        except Order.DoesNotExist:
+            return Response({"error": "Order not found"}, status=status.HTTP_404_NOT_FOUND)
+        payment_link = self.generate_payment_link(order)
+        return Response({"payment_link":payment_link}, status=status.HTTP_200_OK)
+
 
 
 class DashboardView(APIView):

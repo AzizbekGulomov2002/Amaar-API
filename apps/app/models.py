@@ -26,7 +26,10 @@ class Product(models.Model):
     description_ru = models.TextField(null=True, blank=True)
     description_en = models.TextField(null=True, blank=True)
 
-    price = models.DecimalField(max_digits=10, decimal_places=2)
+    # price = models.DecimalField(max_digits=10, decimal_places=2)
+    price = models.FloatField()
+    stripe_price_id = models.CharField(max_length=15)
+    
     category = models.ForeignKey(Category, on_delete=models.CASCADE)
     # images = models.JSONField(default=list, null=True, blank=True)
 
@@ -39,6 +42,9 @@ class Product(models.Model):
         ordering = ['name_uz', 'name_ru', 'name_en']
         verbose_name = 'Product'
         verbose_name_plural = 'Products'
+
+
+
 
 
 class ProductImage(models.Model):

@@ -14,12 +14,15 @@ router.register(r'policy-and-privacy', PolicyAndPrivacyViewSet)
 router.register(r'public-offer', PublicOfferViewSet)
 router.register(r'return-policy', ReturnPolicyViewSet)
 
+# router.register(r'get_payment_link',PaymentLinkViewSet, basename='get_payment_link')
+
 router.register(r'order-history', OrderHistoryViewSet, basename='order-history')
 urlpatterns = [
     path('', include(router.urls)),
 
     path('create-payment/', CreatePaymentView.as_view(), name='create-payment'),
     path('stripe-webhook/', StripeWebhookView.as_view(), name='stripe-webhook'),
+    path('get_payment_link/', PaymentLinkViewSet.as_view(), name='get_payment_link'),
 
 
     path('best_products/', BestProductsListView.as_view(), name='best-products'),

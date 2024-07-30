@@ -1,7 +1,7 @@
 from rest_framework import serializers
 from apps.app.models import *
 from apps.users.serializers import UserSerializer
-
+import stripe
 
 class ProductImageSerializer(serializers.ModelSerializer):
     image_url = serializers.SerializerMethodField()
@@ -33,9 +33,38 @@ class ProductSerializer(serializers.ModelSerializer):
         request = self.context.get('request')
         images = request.FILES.getlist('images')
         product = Product.objects.create(**validated_data)
+        price_id=self.create_stripe_product(product.name_uz, product.description_uz, product.price)
+        product.stripe_price_id=price_id
+        product.save()
         for image in images:
             ProductImage.objects.create(product=product, image=image)
         return product
+    
+    @staticmethod
+    def create_stripe_product(name, description, price):
+        # Create the product in Stripe
+        product = stripe.Product.create(
+            name=name,
+            description=description
+        )
+        # print(product)
+        # print(price, type(price))
+        # Create the price for the product
+        price = stripe.Price.create(
+            product=product.get("id"),
+            currency='aed',  # Use the correct currency code
+            unit_amount=int(price*100.0),  
+            
+            # unit_amount=int(price*Decimal(100)),
+            # type='one_time'
+        )
+        return price.get("id") 
+    def generate_pay_link(product, amount):
+        data = stripe.Payment.create(
+        line_items=[{"price": product.stripe_price_id, "quantity": amount}],
+        )
+        return data.get("url")
+
 
 
 class CategorySerializer(serializers.ModelSerializer):
@@ -49,12 +78,6 @@ class BannerSerializer(serializers.ModelSerializer):
     class Meta:
         model = Banner
         fields = ['id', 'color', 'description_uz', 'description_ru', 'description_en', 'image', 'product']
-
-
-
-
-
-
 
 
 
@@ -93,6 +116,7 @@ class OrderSerializer(serializers.ModelSerializer):
                 'description_ru': item.product.description_ru,
                 'description_en': item.product.description_en,
                 'amount': item.quantity,
+                'price': item.product.price,
                 'images': [
                     request.build_absolute_uri(image.image.url)
                     for image in item.product.images.all()
@@ -107,6 +131,12 @@ class OrderSerializer(serializers.ModelSerializer):
         } if instance.user else None
 
         return representation
+
+
+
+class GeneratePaymentLinkSerializer(serializers.Serializer):
+    order_id = serializers.IntegerField(required=True)
+
 
 class OrderHistoryIDSerializer(serializers.ModelSerializer):
     class Meta:
