@@ -28,7 +28,7 @@ class Product(models.Model):
 
     # price = models.DecimalField(max_digits=10, decimal_places=2)
     price = models.FloatField()
-    stripe_price_id = models.CharField(max_length=15)
+    stripe_price_id = models.CharField(max_length=15,null=True, blank=True)
     
     category = models.ForeignKey(Category, on_delete=models.CASCADE)
     # images = models.JSONField(default=list, null=True, blank=True)
