@@ -1,14 +1,13 @@
-# serializers.py
+from django.contrib.auth import authenticate
 from rest_framework import serializers
-from django.contrib.auth import authenticate, get_user_model
-from .models import User, Company
 
+from .models import User, Company
 
 
 class RegisterSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
-        fields = ("id",'phone_number', 'password', 'name')
+        fields = ("id", 'phone_number', 'password', 'name')
         extra_kwargs = {'password': {'write_only': True}}
 
     def create(self, validated_data):
@@ -18,7 +17,6 @@ class RegisterSerializer(serializers.ModelSerializer):
             name=validated_data.get('name', '')
         )
         return user
-
 
 
 class LoginSerializer(serializers.Serializer):
@@ -31,17 +29,12 @@ class LoginSerializer(serializers.Serializer):
             return user
         raise serializers.ValidationError("Invalid credentials")
 
-# User = get_user_model()
-# class UserSerializer(serializers.ModelSerializer):
-#     class Meta:
-#         model = User
-#         fields = ('id', 'username', 'first_name', 'last_name', 'email')
-#
 
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
-        fields = ['id','phone_number', 'name', 'is_active', 'is_staff', 'date_joined', 'company']
+        fields = ['id', 'phone_number', 'name', 'is_active', 'is_staff', 'date_joined', 'company']
+
 
 class CompanySerializer(serializers.ModelSerializer):
     class Meta:

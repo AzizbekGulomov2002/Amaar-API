@@ -1,7 +1,10 @@
+import stripe
+from django.http import JsonResponse
 from rest_framework import serializers
+
 from apps.app.models import *
 from apps.users.serializers import UserSerializer
-import stripe
+
 
 class ProductImageSerializer(serializers.ModelSerializer):
     image_url = serializers.SerializerMethodField()
@@ -15,14 +18,15 @@ class ProductImageSerializer(serializers.ModelSerializer):
         if obj.image and hasattr(obj.image, 'url'):
             return request.build_absolute_uri(obj.image.url)
         return None
-    
+
 
 class ProductSerializer(serializers.ModelSerializer):
     images = serializers.SerializerMethodField()
 
     class Meta:
         model = Product
-        fields = ['id', 'name_uz', 'name_ru', 'name_en', 'description_uz', 'description_ru', 'description_en', 'price', 'category', 'images', 'best_deals','stripe_price_id']
+        fields = ['id', 'name_uz', 'name_ru', 'name_en', 'description_uz', 'description_ru', 'description_en', 'price',
+                  'category', 'images', 'best_deals', 'stripe_price_id']
 
     def get_images(self, obj):
         request = self.context.get('request')
@@ -33,38 +37,43 @@ class ProductSerializer(serializers.ModelSerializer):
         request = self.context.get('request')
         images = request.FILES.getlist('images')
         product = Product.objects.create(**validated_data)
-        price_id=self.create_stripe_product(product.name_uz, product.description_uz, product.price)
-        product.stripe_price_id=price_id
+        price_id = self.create_stripe_product(product.name_uz, product.description_uz, product.price)
+        product.stripe_price_id = price_id
         product.save()
         for image in images:
             ProductImage.objects.create(product=product, image=image)
         return product
-    
+
     @staticmethod
     def create_stripe_product(name, description, price):
-        # Create the product in Stripe
         product = stripe.Product.create(
             name=name,
             description=description
         )
-        # print(product)
-        # print(price, type(price))
-        # Create the price for the product
         price = stripe.Price.create(
             product=product.get("id"),
-            currency='aed',  # Use the correct currency code
-            unit_amount=int(price*100.0),  
-            
-            # unit_amount=int(price*Decimal(100)),
-            # type='one_time'
+            currency='aed',
+            unit_amount=int(price * 100.0),
         )
-        return price.get("id") 
-    def generate_pay_link(product, amount):
-        data = stripe.Payment.create(
-        line_items=[{"price": product.stripe_price_id, "quantity": amount}],
-        )
-        return data.get("url")
+        return price.get("id")
 
+    @staticmethod
+    def generate_payment_link(product, quantity):
+        if product.stripe_price_id:
+            session = stripe.checkout.Session.create(
+                payment_method_types=['card'],
+                line_items=[{
+                    'price': product.stripe_price_id,
+                    'quantity': quantity,
+                }],
+                mode='payment',
+                success_url='https://your-success-url.com/success',
+                cancel_url='https://your-success-url.com/cancel',
+            )
+        else:
+            return JsonResponse(f"error : Product has not StripePriceId  ")
+
+        return session.url
 
 
 class CategorySerializer(serializers.ModelSerializer):
@@ -74,11 +83,11 @@ class CategorySerializer(serializers.ModelSerializer):
         model = Category
         fields = ['id', 'name_uz', 'name_ru', 'name_en', 'image', 'products']
 
+
 class BannerSerializer(serializers.ModelSerializer):
     class Meta:
         model = Banner
         fields = ['id', 'color', 'description_uz', 'description_ru', 'description_en', 'image', 'product']
-
 
 
 class OrderItemSerializer(serializers.ModelSerializer):
@@ -133,7 +142,6 @@ class OrderSerializer(serializers.ModelSerializer):
         return representation
 
 
-
 class GeneratePaymentLinkSerializer(serializers.Serializer):
     order_id = serializers.IntegerField(required=True)
 
@@ -150,7 +158,6 @@ class OrderHistoryIDSerializer(serializers.ModelSerializer):
         return representation
 
 
-
 class OrderHistoryBaseSerializers(serializers.ModelSerializer):
     class Meta:
         model = OrderHistory
@@ -158,7 +165,6 @@ class OrderHistoryBaseSerializers(serializers.ModelSerializer):
 
     def create(self, validated_data):
         order_history = super().create(validated_data)
-        # Update the order status
         order = order_history.order
         order.status = order_history.status
         order.save()
@@ -166,7 +172,6 @@ class OrderHistoryBaseSerializers(serializers.ModelSerializer):
 
     def update(self, instance, validated_data):
         instance = super().update(instance, validated_data)
-        # Update the order status
         order = instance.order
         order.status = instance.status
         order.save()
@@ -176,52 +181,12 @@ class OrderHistoryBaseSerializers(serializers.ModelSerializer):
         representation = super().to_representation(instance)
         representation['user'] = UserSerializer(instance.user).data
         return representation
-    
-    
-# class OrderHistoryBaseSerializers(serializers.ModelSerializer):
-#     class Meta:
-#         model = OrderHistory
-#         fields = ['id', 'order', 'user', 'date', 'status']
-
-#     def create(self, validated_data):
-#         order_history = super().create(validated_data)
-#         # Update the order status
-#         order = order_history.order
-#         order.status = order_history.status
-#         order.save()
-#         return order_history
-
-#     def update(self, instance, validated_data):
-#         # Update the order history instance
-#         instance = super().update(instance, validated_data)
-#         # Update the order status
-#         order = instance.order
-#         order.status = instance.status
-#         order.save()
-#         return instance
-
-#     def to_representation(self, instance):
-#         representation = super().to_representation(instance)
-#         representation['user'] = UserSerializer(instance.user).data
-#         return representation
-
-
-
-
-
-
-
-
-
-
-
 
 
 class PaymentSerializer(serializers.ModelSerializer):
     class Meta:
         model = Payment
         fields = ['id', 'order', 'stripe_charge_id', 'amount', 'created_at']
-
 
 
 class DashboardSerializer(serializers.Serializer):
@@ -237,7 +202,6 @@ class DashboardSerializer(serializers.Serializer):
     top_products = serializers.ListField(child=serializers.DictField())
     top_users = serializers.ListField(child=serializers.DictField())
     top_categories = serializers.ListField(child=serializers.DictField())
-
 
 
 class DeliveryInfoSerializer(serializers.ModelSerializer):
@@ -262,5 +226,3 @@ class ReturnPolicySerializer(serializers.ModelSerializer):
     class Meta:
         model = ReturnPolicy
         fields = ['id', 'name_uz', 'name_ru', 'name_en']
-
-

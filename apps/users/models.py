@@ -1,43 +1,35 @@
-# models.py
 from ckeditor.fields import RichTextField
 from django.contrib.auth.models import AbstractBaseUser, BaseUserManager, PermissionsMixin
 from django.db import models
 
 
-
 class Company(models.Model):
-    name = models.CharField(max_length=255,blank=True, null=True)
-    # name_ru = models.CharField(max_length=255,blank=True, null=True)
-    # name_en = models.CharField(max_length=255,blank=True, null=True)
-
-
-    address = models.CharField(max_length=255,blank=True, null=True)
-    # address_ru = models.CharField(max_length=255,blank=True, null=True)
-    # address_en = models.CharField(max_length=255,blank=True, null=True)
-
+    name = models.CharField(max_length=255, blank=True, null=True)
+    address = models.CharField(max_length=255, blank=True, null=True)
     phone_number = models.CharField(max_length=20)
     email = models.EmailField()
-
     description = models.TextField(blank=True, null=True)
-    # description_ru = models.TextField(blank=True, null=True)
-    # description_en = models.TextField(blank=True, null=True)
-
-
     logo = models.ImageField(upload_to='company_logos/', blank=True, null=True)
     latitude = models.DecimalField(max_digits=9, decimal_places=6)
     longitude = models.DecimalField(max_digits=9, decimal_places=6)
-
     policy = RichTextField()
-    # policy = RichTextField(blank=True, null=True)
-    # policy = RichTextField(blank=True, null=True)
-
-
     public_offer = RichTextField(blank=True, null=True)
+
+    # name_ru = models.CharField(max_length=255,blank=True, null=True)
+    # name_en = models.CharField(max_length=255,blank=True, null=True)
+    # address_ru = models.CharField(max_length=255,blank=True, null=True)
+    # address_en = models.CharField(max_length=255,blank=True, null=True)
+
+    # description_ru = models.TextField(blank=True, null=True)
+    # description_en = models.TextField(blank=True, null=True)
+
+    # policy = RichTextField(blank=True, null=True)
+    # policy = RichTextField(blank=True, null=True)
+
     # public_offer_ru = RichTextField(blank=True, null=True)
     # public_offer_en = RichTextField(blank=True, null=True)
     def __str__(self):
         return self.name
-
 
 
 class UserManager(BaseUserManager):
@@ -53,6 +45,7 @@ class UserManager(BaseUserManager):
         extra_fields.setdefault('is_staff', True)
         extra_fields.setdefault('is_superuser', True)
         return self.create_user(phone_number, password, **extra_fields)
+
 
 class User(AbstractBaseUser, PermissionsMixin):
     phone_number = models.CharField(max_length=20, unique=True)
@@ -77,5 +70,4 @@ class User(AbstractBaseUser, PermissionsMixin):
 
     @property
     def history(self):
-        # Assuming `history` is a list of user orders or related activities
         return ["Order 1", "Order 2", "Order 3"]

@@ -1,44 +1,42 @@
+from datetime import timedelta, date, datetime
+
+from django.conf import settings
 from django.db.models import Count
 from django.utils.timezone import now
+from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import viewsets, generics, status, filters
-from rest_framework.permissions import IsAuthenticatedOrReadOnly, AllowAny, IsAuthenticated
+from rest_framework.decorators import action
+from rest_framework.pagination import PageNumberPagination
+from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
-from rest_framework.viewsets import ModelViewSet
-import stripe
-from .models import *
+
+from apps.app.filters import CategoryFilter, ProductFilter
 from .serializers import *
 from ..users.models import User
-from django.utils.timezone import now
-from datetime import timedelta, date, datetime
-from rest_framework.pagination import BasePagination, PageNumberPagination
-from django_filters.rest_framework import DjangoFilterBackend
-from apps.app.filters import CategoryFilter, ProductFilter
-from rest_framework.decorators import action
-from django.conf import settings
 
 stripe.api_key = settings.STRIPE_SECRET_KEY
 
+stripe.api_key = settings.STRIPE_SECRET_KEY
+
+
 class CreatePaymentView(APIView):
+    serializer_class = PaymentSerializer
+
     def post(self, request, *args, **kwargs):
         order_id = request.data.get('order_id')
-        order = Order.objects.get(id=order_id)
-        amount = int(order.total_quantity * 100)
         try:
-            charge = stripe.Charge.create(
-                amount=amount,
-                currency='usd',
-                description=f'Order {order_id}',
-                source=request.data.get('stripe_token')
-            )
-            payment = Payment.objects.create(
-                order=order,
-                stripe_charge_id=charge['id'],
-                amount=order.total_quantity
-            )
-            return Response(PaymentSerializer(payment).data, status=status.HTTP_201_CREATED)
+            order = Order.objects.get(id=order_id)
+            amount = sum(item.quantity for item in order.products.all())
+        except Order.DoesNotExist:
+            return Response({'error': 'Order not found'}, status=status.HTTP_404_NOT_FOUND)
+
+        try:
+            payment_link = ProductSerializer.generate_payment_link(order.products.first().product, amount)
+            return Response({'payment_url': payment_link}, status=status.HTTP_201_CREATED)
         except stripe.error.StripeError as e:
             return Response({'error': str(e)}, status=status.HTTP_400_BAD_REQUEST)
+
 
 class StripeWebhookView(APIView):
     def post(self, request, *args, **kwargs):
@@ -60,10 +58,11 @@ class StripeWebhookView(APIView):
             Payment.objects.create(
                 order=order,
                 stripe_charge_id=charge['id'],
-                amount=charge['amount'] / 100  # Convert cents to dollars
+                amount=charge['amount'] / 100
             )
 
         return Response(status=status.HTTP_200_OK)
+
 
 class BasePagination(PageNumberPagination):
     page_size = 10
@@ -80,8 +79,10 @@ class BasePagination(PageNumberPagination):
             "results": data
         })
 
+
 class CustomPaginationMixin:
     pagination_class = BasePagination
+
 
 class AllCategoryViewSet(viewsets.ModelViewSet):
     queryset = Category.objects.all()
@@ -95,6 +96,7 @@ class AllCategoryViewSet(viewsets.ModelViewSet):
     def get_queryset(self):
         queryset = Category.objects.all()
         return queryset
+
 
 class CategoryViewSet(viewsets.ModelViewSet):
     pagination_class = BasePagination
@@ -139,12 +141,11 @@ class ReturnPolicyViewSet(viewsets.ModelViewSet):
     queryset = ReturnPolicy.objects.all()
     serializer_class = ReturnPolicySerializer
 
+
 class BannerViewSet(viewsets.ModelViewSet):
     queryset = Banner.objects.all().order_by('-id')
     serializer_class = BannerSerializer
     permission_classes = [IsAuthenticated]
-
-
 
 
 class OrderHistoryViewSet(viewsets.ModelViewSet):
@@ -168,7 +169,6 @@ class OrderHistoryViewSet(viewsets.ModelViewSet):
         return Response(serializer.data)
 
 
-
 class UserOrderHistoryAPIView(generics.ListAPIView):
     permission_classes = [AllowAny]
     serializer_class = OrderSerializer
@@ -181,23 +181,24 @@ class UserOrderHistoryAPIView(generics.ListAPIView):
         queryset = self.get_queryset()
         orders_serializer = self.get_serializer(queryset, many=True, context={'request': request})
         return Response(orders_serializer.data)
-    
 
 
 class OrderListAPIView(generics.ListCreateAPIView):
     serializer_class = OrderSerializer
     permission_classes = [AllowAny]
+
     def get_queryset(self):
         queryset = Order.objects.all().order_by('-id')
         user_id = self.request.query_params.get('user_id', None)
         if user_id is not None:
             queryset = queryset.filter(user_id=user_id)
         return queryset
-    
+
 
 class OrderDetailAPIView(generics.RetrieveUpdateDestroyAPIView):
     serializer_class = OrderSerializer
     permission_classes = [AllowAny]
+
     def get_queryset(self):
         queryset = Order.objects.all().order_by('-id')
         user_id = self.request.query_params.get('user_id', None)
@@ -206,27 +207,27 @@ class OrderDetailAPIView(generics.RetrieveUpdateDestroyAPIView):
         return queryset
 
 
-# class PaymentLinkViewSet(generics.GenericAPIView):
-#     serializer_class = GeneratePaymentLinkSerializer
-#     def post(self, request, *args, **kwargs):
-#         order_id = request.data.get("order_id")
-#         order_id.objects.get(Order)
-
-
-
 class PaymentLinkViewSet(generics.GenericAPIView):
     serializer_class = GeneratePaymentLinkSerializer
+
     def post(self, request, *args, **kwargs):
-        order_id = request.data.get("order_id")
-        if not order_id:
-            return Response({"error":"order id is required"}, status=status.HTTP_400_BAD_REQUEST)
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        order_id = serializer.validated_data.get("order_id")
+        amount = serializer.validated_data.get("amount")
+
         try:
             order = Order.objects.get(id=order_id)
         except Order.DoesNotExist:
             return Response({"error": "Order not found"}, status=status.HTTP_404_NOT_FOUND)
-        payment_link = self.generate_payment_link(order)
-        return Response({"payment_link":payment_link}, status=status.HTTP_200_OK)
 
+        product = order.product
+
+        try:
+            payment_link = ProductSerializer.generate_payment_link(product, amount)
+            return Response({"url": {payment_link}}, status=status.HTTP_201_CREATED)
+        except Exception as e:
+            return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 
 class DashboardView(APIView):
@@ -246,12 +247,12 @@ class DashboardView(APIView):
         total_categories = Category.objects.count()
         total_banner = Banner.objects.count()
 
-        orders_by_day = Order.objects.extra(select={'day': 'date(created_at)'}).values('day').annotate(count=Count('id')).order_by('day')
+        orders_by_day = Order.objects.extra(select={'day': 'date(created_at)'}).values('day').annotate(
+            count=Count('id')).order_by('day')
         top_products = OrderItem.objects.values('product__id').annotate(count=Count('id')).order_by('-count')[:10]
         top_users = Order.objects.values('user__id').annotate(count=Count('id')).order_by('-count')[:10]
         top_categories = Product.objects.values('category__id').annotate(count=Count('id')).order_by('-count')[:10]
 
-        # Ensure datetime objects are converted to ISO format strings
         for order in orders_by_day:
             order['day'] = order['day'].isoformat() if isinstance(order['day'], (date, datetime)) else order['day']
 

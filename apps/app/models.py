@@ -1,6 +1,8 @@
-from django.db import models
-from apps.users.models import User
 from ckeditor.fields import RichTextField
+from django.db import models
+
+from apps.users.models import User
+
 
 class Category(models.Model):
     name_uz = models.CharField(max_length=255, null=True, blank=True)
@@ -28,11 +30,9 @@ class Product(models.Model):
 
     # price = models.DecimalField(max_digits=10, decimal_places=2)
     price = models.FloatField()
-    stripe_price_id = models.CharField(max_length=15,null=True, blank=True)
-    
-    category = models.ForeignKey(Category, on_delete=models.CASCADE)
-    # images = models.JSONField(default=list, null=True, blank=True)
+    stripe_price_id = models.CharField(max_length=255, null=True, blank=True)
 
+    category = models.ForeignKey(Category, on_delete=models.CASCADE)
     best_deals = models.BooleanField(default=False)
 
     def __str__(self):
@@ -44,12 +44,10 @@ class Product(models.Model):
         verbose_name_plural = 'Products'
 
 
-
-
-
 class ProductImage(models.Model):
     product = models.ForeignKey("Product", related_name='images', on_delete=models.CASCADE)
     image = models.ImageField(upload_to='product_images/')
+
     def __str__(self):
         return f"Image for {self.product}"
 
@@ -74,14 +72,13 @@ class Banner(models.Model):
 
 
 class Order(models.Model):
-
     PENDING = 'pending'
     SHIPPED = 'shipped'
     DELIVERED = 'delivered'
     CANCELED = 'canceled'
-    
+
     STATUS_CHOICES = [
-        (PENDING, 'Pending'),  # waiting
+        (PENDING, 'Pending'),
         (SHIPPED, 'Shipped'),
         (DELIVERED, 'Delivered'),
         (CANCELED, 'Canceled'),
@@ -94,11 +91,12 @@ class Order(models.Model):
     comment = models.TextField(null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
     user = models.ForeignKey(User, related_name='orders', on_delete=models.CASCADE)
+
     class Meta:
         ordering = ['-created_at']
         verbose_name = 'Order'
         verbose_name_plural = 'Orders'
-    
+
     @property
     def total_quantity(self):
         return sum(item.quantity for item in self.products.all())
@@ -113,8 +111,6 @@ class OrderItem(models.Model):
         ordering = ['order']
         verbose_name = 'Order Item'
         verbose_name_plural = 'Order Items'
-
-
 
 
 class OrderHistory(models.Model):
@@ -141,17 +137,14 @@ class Payment(models.Model):
         verbose_name_plural = 'Payments'
 
 
-
-
-
-
 class DeliveryInfo(models.Model):
     name_uz = RichTextField()
     name_ru = RichTextField()
     name_en = RichTextField()
 
     def __str__(self):
-        return self.name_uz[:50] 
+        return self.name_uz[:50]
+
 
 class PolicyAndPrivacy(models.Model):
     name_uz = RichTextField()
@@ -159,7 +152,8 @@ class PolicyAndPrivacy(models.Model):
     name_en = RichTextField()
 
     def __str__(self):
-        return self.name_uz[:50] 
+        return self.name_uz[:50]
+
 
 class PublicOffer(models.Model):
     name_uz = RichTextField()
@@ -167,7 +161,8 @@ class PublicOffer(models.Model):
     name_en = RichTextField()
 
     def __str__(self):
-        return self.name_uz[:50] 
+        return self.name_uz[:50]
+
 
 class ReturnPolicy(models.Model):
     name_uz = RichTextField()
@@ -175,4 +170,4 @@ class ReturnPolicy(models.Model):
     name_en = RichTextField()
 
     def __str__(self):
-        return self.name_uz[:50] 
+        return self.name_uz[:50]
