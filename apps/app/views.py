@@ -47,10 +47,11 @@ class StripeWebhookView(APIView):
             event = stripe.Webhook.construct_event(
                 payload, sig_header, settings.STRIPE_WEBHOOK_SECRET
             )
-        except ValueError as e:
+        except ValueError:
             return Response(status=status.HTTP_400_BAD_REQUEST)
-        except stripe.error.SignatureVerificationError as e:
+        except stripe.error.SignatureVerificationError:
             return Response(status=status.HTTP_400_BAD_REQUEST)
+
         if event['type'] == 'charge.succeeded':
             charge = event['data']['object']
             order_id = charge['description'].split(' ')[1]
@@ -60,6 +61,25 @@ class StripeWebhookView(APIView):
                 stripe_charge_id=charge['id'],
                 amount=charge['amount'] / 100
             )
+            order.status = 'paid'
+            order.save()
+        elif event['type'] == 'payment_intent.succeeded':
+            payment_intent = event['data']['object']
+            order_id = payment_intent['metadata']['order_id']
+            order = Order.objects.get(id=order_id)
+            Payment.objects.create(
+                order=order,
+                stripe_charge_id=payment_intent['id'],
+                amount=payment_intent['amount_received'] / 100
+            )
+            order.status = 'paid'
+            order.save()
+        elif event['type'] == 'payment_intent.payment_failed':
+            payment_intent = event['data']['object']
+            order_id = payment_intent['metadata']['order_id']
+            order = Order.objects.get(id=order_id)
+            order.status = 'payment_failed'
+            order.save()
 
         return Response(status=status.HTTP_200_OK)
 

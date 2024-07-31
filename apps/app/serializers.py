@@ -58,20 +58,20 @@ class ProductSerializer(serializers.ModelSerializer):
         return price.get("id")
 
     @staticmethod
-    def generate_payment_link(product, quantity):
+    def generate_payment_link(product, amount):
         if product.stripe_price_id:
             session = stripe.checkout.Session.create(
                 payment_method_types=['card'],
                 line_items=[{
                     'price': product.stripe_price_id,
-                    'quantity': quantity,
+                    'quantity': amount,
                 }],
                 mode='payment',
                 success_url='https://your-success-url.com/success',
                 cancel_url='https://your-success-url.com/cancel',
             )
         else:
-            return JsonResponse(f"error : Product has not StripePriceId  ")
+            return JsonResponse({"error": "Product has no StripePriceId"}, status=400)
 
         return session.url
 
