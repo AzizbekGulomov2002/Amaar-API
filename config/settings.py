@@ -17,14 +17,18 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
 
+    # my_apps
+    'apps',
+    'apps.orders',
+    'apps.users',
+
+    # 3rd party apps
     'ckeditor',
     'rest_framework',
     'rest_framework.authtoken',
     'django_filters',
     'drf_yasg',
 
-    'apps.app',
-    'apps.users',
 ]
 
 AUTH_USER_MODEL = 'users.User'
@@ -99,6 +103,16 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
+CACHES = {
+    'default': {
+        'BACKEND': 'django_redis.cache.RedisCache',
+        'LOCATION': 'redis://127.0.0.1:6379/1',
+        'OPTIONS': {
+            'CLIENT_CLASS': 'django_redis.client.DefaultClient',
+        }
+    }
+}
+SITE_URL = 'http://127.0.0.1:8000'
 # Internationalization
 LANGUAGE_CODE = 'uz-ru'
 
@@ -114,28 +128,19 @@ MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
 JAZZMIN_SETTINGS = {
-    "site_title": "Smart-tizim ERP",
-    "site_header": "Smart-tizim ERP",
-    "site_brand": "Smart-tizim ERP",
+    "site_title": "Tashkent-Marker ERP",
+    "site_header": "Tashkent-Marker ERP",
+    "site_brand": "Tashkent-Marker ERP",
     "site_logo": "path/to/logo.png",
     "login_logo": None,
     "login_logo_dark": None,
     "site_logo_classes": "img-circle",
     "site_icon": None,
-    "welcome_sign": "Welcome to the Smart-tizim ERP superadmin panel",
-    "copyright": "Acme Smart-tizim ERP Ltd",
+    "welcome_sign": "Welcome to the Tashkent-Marker ERP superadmin panel",
+    "copyright": "Acme Tashkent-Marker ERP Ltd",
     "search_model": ["auth.User"],
     "user_avatar": None,
-    "topmenu_links": [
-        {"name": "Home", "url": "admin:index", "permissions": ["auth.view_user"]},
-        {"name": "Support", "url": "https://t.me/AzizbekGulomov", "new_window": True},
-        {"model": "auth.User"},
-        {"app": "apps"},
-    ],
-    "usermenu_links": [
-        {"name": "Support", "url": "https://t.me/AzizbekGulomov", "new_window": True},
-        {"model": "auth.User"}
-    ],
+
     "show_sidebar": True,
     "navigation_expanded": False,
     "hide_apps": [],
@@ -144,11 +149,11 @@ JAZZMIN_SETTINGS = {
         "auth": "fas fa-users-cog",
         "auth.user": "fas fa-user",
         "auth.Group": "fas fa-users",
-        "app.Product": "fas fa-cube",
-        "app.Category": "fas fa-tags",
-        "app.Banner": "fas fa-image",
-        "app.Order": "fas fa-map-marker-alt",
-        "app.OrderItem": "fas fa-shopping-cart",
+        "orders.Product": "fas fa-cube",
+        "orders.Category": "fas fa-tags",
+        "orders.Banner": "fas fa-image",
+        "orders.Order": "fas fa-map-marker-alt",
+        "orders.OrderItem": "fas fa-shopping-cart",
         "users.User": "fas fa-users",
         "users.Company": "fas fa-building",
     },
@@ -167,3 +172,4 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 STRIPE_SECRET_KEY = 'sk_test_51O2EEvBJlouxhpbibHG4gUqjIlbo9SazFPvd31OkBpazbyQVNEgfoelcaCrKSFN1Ln5RlNEwGW0l4BvM5GIyrA6b009ZHvBvu0'
 STRIPE_PUBLISHABLE_KEY = 'pk_test_51O2EEvBJlouxhpbitwOhBgXbdslgiysOC4AcLN8S2JIByp7WRZYVbX1ajnlMbzs5V68wbtDHcggCfFbXb7YqoOXM00CvuF8RUo'
+STRIPE_WEBHOOK_SECRET = 'whsec_64b556bb62845a1f2fb421940e09b77e0dece0b49d898df0848963fff8e065fc'
