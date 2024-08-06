@@ -114,9 +114,15 @@ CACHES = {
 }
 SITE_URL = 'http://127.0.0.1:8000'
 # Internationalization
+<<<<<<< HEAD
 LANGUAGE_CODE = 'en-en'
 
 TIME_ZONE = 'UTC'
+=======
+LANGUAGE_CODE = 'uz-ru'
+
+TIME_ZONE = 'Asia/Tashkent'
+>>>>>>> 1658386e5903367e192eb855052b738e05580e71
 
 USE_I18N = True
 USE_TZ = True
@@ -128,16 +134,27 @@ MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
 JAZZMIN_SETTINGS = {
+<<<<<<< HEAD
     "site_title": "Tashkent-Marker AE",
     "site_header": "Tashkent-Marker AE",
     "site_brand": "Tashkent-Marker AE",
+=======
+    "site_title": "Tashkent-Marker ERP",
+    "site_header": "Tashkent-Marker ERP",
+    "site_brand": "Tashkent-Marker ERP",
+>>>>>>> 1658386e5903367e192eb855052b738e05580e71
     "site_logo": "path/to/logo.png",
     "login_logo": None,
     "login_logo_dark": None,
     "site_logo_classes": "img-circle",
     "site_icon": None,
+<<<<<<< HEAD
     "welcome_sign": "Welcome to the Tashkent-Marker AE Admin panel",
     "copyright": "Acme Tashkent-Marker Ltd",
+=======
+    "welcome_sign": "Welcome to the Tashkent-Marker ERP superadmin panel",
+    "copyright": "Acme Tashkent-Marker ERP Ltd",
+>>>>>>> 1658386e5903367e192eb855052b738e05580e71
     "search_model": ["auth.User"],
     "user_avatar": None,
 
@@ -174,7 +191,10 @@ JAZZMIN_SETTINGS = {
     "changeform_format_overrides": {"auth.user": "collapsible", "auth.group": "vertical_tabs"},
 }
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> 1658386e5903367e192eb855052b738e05580e71
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 STRIPE_SECRET_KEY = 'sk_test_51O2EEvBJlouxhpbibHG4gUqjIlbo9SazFPvd31OkBpazbyQVNEgfoelcaCrKSFN1Ln5RlNEwGW0l4BvM5GIyrA6b009ZHvBvu0'
