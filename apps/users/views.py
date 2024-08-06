@@ -1,9 +1,7 @@
-from django.contrib.auth.hashers import make_password
-from rest_framework import generics, status, viewsets
-from rest_framework.permissions import IsAuthenticated
-from rest_framework.response import Response
+from rest_framework import generics
 from rest_framework.authtoken.models import Token
-from rest_framework.views import APIView
+from rest_framework.permissions import AllowAny
+from rest_framework.response import Response
 from tutorial.quickstart.serializers import UserSerializer
 
 from .models import User, Company
@@ -13,6 +11,7 @@ from .serializers import RegisterSerializer, LoginSerializer, CompanySerializer
 class RegisterView(generics.CreateAPIView):
     queryset = User.objects.all()
     serializer_class = RegisterSerializer
+
 
 class LoginView(generics.GenericAPIView):
     serializer_class = LoginSerializer
@@ -31,23 +30,26 @@ class LoginView(generics.GenericAPIView):
             }
         })
 
+
 class UserListCreateAPIView(generics.ListCreateAPIView):
     queryset = User.objects.all()
     serializer_class = UserSerializer
-    permission_classes = [IsAuthenticated]
-    
+    permission_classes = [AllowAny]
+
 
 class UserDetailsAPIView(generics.RetrieveUpdateDestroyAPIView):
     queryset = User.objects.all()
     serializer_class = UserSerializer
-    permission_classes = [IsAuthenticated]
+    permission_classes = [AllowAny]
+
 
 class CompanyListCreateView(generics.ListCreateAPIView):
     queryset = Company.objects.all()
     serializer_class = CompanySerializer
-    permission_classes = [IsAuthenticated]
+    permission_classes = [AllowAny]
+
 
 class CompanyDetailView(generics.RetrieveUpdateDestroyAPIView):
     queryset = Company.objects.all()
     serializer_class = CompanySerializer
-    permission_classes = [IsAuthenticated]
+    permission_classes = [AllowAny]

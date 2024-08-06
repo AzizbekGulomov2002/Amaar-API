@@ -1,7 +1,9 @@
 from ckeditor.fields import RichTextField
-from django.contrib import admin
-from .models import User, Company
 from ckeditor.widgets import CKEditorWidget
+from django.contrib import admin
+
+from .models import User, Company
+
 
 @admin.register(User)
 class UserAdmin(admin.ModelAdmin):
@@ -16,4 +18,3 @@ class CompanyAdmin(admin.ModelAdmin):
         RichTextField: {'widget': CKEditorWidget},
     }
     list_display = ('name', 'address', 'phone_number', 'email')  # Display fields in the list view
-

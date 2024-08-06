@@ -84,3 +84,11 @@ local_settings.py
 db.sqlite3
 .idea
 venv
+
+
+# Media files
+media/
+
+
+# SQLite database files
+*.sqlite3
