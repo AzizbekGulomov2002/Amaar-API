@@ -1,7 +1,7 @@
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import viewsets, generics, status, filters
 from rest_framework.parsers import MultiPartParser, FormParser
-from rest_framework.permissions import AllowAny, IsAuthenticated
+from rest_framework.permissions import AllowAny, IsAuthenticated,IsAuthenticatedOrReadOnly
 from rest_framework.response import Response
 
 from apps.orders.filters import CategoryFilter, ProductFilter
@@ -25,7 +25,7 @@ class ProductViewSet(viewsets.ModelViewSet):
     filterset_class = ProductFilter
     queryset = Product.objects.all().order_by('-id')
     serializer_class = ProductSerializer
-    permission_classes = [AllowAny]
+    permission_classes = [IsAuthenticatedOrReadOnly]
     search_fields = ['name_uz', 'name_ru', 'name_en', 'description_uz', 'description_ru', 'description_en']
 
     def destroy(self, request, *args, **kwargs):
