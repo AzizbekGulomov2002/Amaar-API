@@ -87,3 +87,5 @@ venv
 media/*
 apps/orders/migrations/*
 apps/users/migrations/*
+apps/landing/migrations/*
+.env

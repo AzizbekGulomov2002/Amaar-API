@@ -1,13 +1,14 @@
 import os
 from pathlib import Path
 
-# BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+from dotenv import load_dotenv
+
+load_dotenv()
 BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'django-insecure-01a^wc2kflvivde7%4j!*3n2090!-s)+21@k5g5ur4!=a)p#g8'
 DEBUG = True
 ALLOWED_HOSTS = ["*"]
 APPEND_SLASH = False
-
 INSTALLED_APPS = [
     'jazzmin',
     'django.contrib.admin',
@@ -114,7 +115,6 @@ CACHES = {
     }
 }
 SITE_URL = 'http://127.0.0.1:8000'
-# Internationalization
 LANGUAGE_CODE = 'uz-ru'
 
 TIME_ZONE = 'Asia/Tashkent'
@@ -212,6 +212,6 @@ JAZZMIN_UI_TWEAKS = {
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-STRIPE_SECRET_KEY = ''
-STRIPE_PUBLISHABLE_KEY = ''
-STRIPE_WEBHOOK_SECRET = ''
+STRIPE_SECRET_KEY = os.getenv('STRIPE_SECRET_KEY')
+STRIPE_PUBLISHABLE_KEY = os.getenv('STRIPE_PUBLISHABLE_KEY')
+STRIPE_WEBHOOK_SECRET = os.getenv('STRIPE_WEBHOOK_SECRET')
