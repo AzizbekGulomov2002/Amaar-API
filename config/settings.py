@@ -21,6 +21,7 @@ INSTALLED_APPS = [
     'apps',
     'apps.orders',
     'apps.users',
+    'apps.landing',
 
     # 3rd party apps
     'ckeditor',
@@ -157,6 +158,12 @@ JAZZMIN_SETTINGS = {
         "orders.OrderItem": "fas fa-shopping-cart",
         "users.User": "fas fa-users",
         "users.Company": "fas fa-building",
+
+        "orders.DeliveryInfo": "fas fa-truck",
+        "orders.PolicyAndPrivacy": "fas fa-file-alt",
+        "orders.PublicOffer": "fas fa-handshake",
+        "orders.ReturnPolicy": "fas fa-undo",
+        "orders.OrderHistory": "fas fa-history",
     },
     "default_icon_parents": "fas fa-chevron-circle-right",
     "default_icon_children": "fas fa-circle",
@@ -205,12 +212,6 @@ JAZZMIN_UI_TWEAKS = {
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-STRIPE_SECRET_KEY = 'sk_test_51O2EEvBJlouxhpbibHG4gUqjIlbo9SazFPvd31OkBpazbyQVNEgfoelcaCrKSFN1Ln5RlNEwGW0l4BvM5GIyrA6b009ZHvBvu0'
-STRIPE_PUBLISHABLE_KEY = 'pk_test_51O2EEvBJlouxhpbitwOhBgXbdslgiysOC4AcLN8S2JIByp7WRZYVbX1ajnlMbzs5V68wbtDHcggCfFbXb7YqoOXM00CvuF8RUo'
-STRIPE_WEBHOOK_SECRET = 'whsec_64b556bb62845a1f2fb421940e09b77e0dece0b49d898df0848963fff8e065fc'
-# # STRIPE_WEBHOOK_SECRET = 'whsec_4iF0vkxpWQHGKdbbLs5IPFrmXpISGc1K'
-
-# STRIPE_SECRET_KEY = 'pk_live_51O2EEvBJlouxhpbibp6ZWaWkOLufBx6kQ8Ul976fyDYQhcLyBWSFRwsHkRj4CwbYdp5Q6uOjvcyG0LIswpMG8xOl002nbWrUIl'
-# STRIPE_PUBLISHABLE_KEY = 'pk_live_51O2EEvBJlouxhpbibp6ZWaWkOLufBx6kQ8Ul976fyDYQhcLyBWSFRwsHkRj4CwbYdp5Q6uOjvcyG0LIswpMG8xOl002nbWrUIl'
-# STRIPE_WEBHOOK_SECRET = 'whsec_64b556bb62845a1f2fb421940e09b77e0dece0b49d898df0848963fff8e065fc'
-# # STRIPE_WEBHOOK_SECRET = 'whsec_4iF0vkxpWQHGKdbbLs5IPFrmXpISGc1K'
+STRIPE_SECRET_KEY = ''
+STRIPE_PUBLISHABLE_KEY = ''
+STRIPE_WEBHOOK_SECRET = ''

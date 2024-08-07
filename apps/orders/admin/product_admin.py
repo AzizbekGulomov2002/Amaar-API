@@ -19,6 +19,7 @@ class CategoryAdmin(admin.ModelAdmin):
 
 @admin.register(Product)
 class ProductAdmin(admin.ModelAdmin):
+    # change_form_template = "admin/orders/product/change_form.html"
     inlines = [ProductImageInline]
     list_display = ('id', 'name_uz', 'price', 'quantity', 'category', 'best_deals', 'view_button')
     search_fields = ('name_uz', 'name_ru', 'name_en')

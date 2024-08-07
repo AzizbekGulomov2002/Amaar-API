@@ -3,33 +3,20 @@ from django.contrib.auth.models import AbstractBaseUser, BaseUserManager, Permis
 from django.db import models
 
 
-class Company(models.Model):
-    name = models.CharField(max_length=255, blank=True, null=True)
-    address = models.CharField(max_length=255, blank=True, null=True)
-    phone_number = models.CharField(max_length=20)
-    email = models.EmailField()
-    description = models.TextField(blank=True, null=True)
-    logo = models.ImageField(upload_to='company_logos/', blank=True, null=True)
-    latitude = models.DecimalField(max_digits=9, decimal_places=6)
-    longitude = models.DecimalField(max_digits=9, decimal_places=6)
-    policy = RichTextField()
-    public_offer = RichTextField(blank=True, null=True)
+# class Company(models.Model):
+#     name = models.CharField(max_length=255, blank=True, null=True)
+#     address = models.CharField(max_length=255, blank=True, null=True)
+#     phone_number = models.CharField(max_length=20)
+#     email = models.EmailField()
+#     description = models.TextField(blank=True, null=True)
+#     logo = models.ImageField(upload_to='company_logos/', blank=True, null=True)
+#     latitude = models.DecimalField(max_digits=9, decimal_places=6)
+#     longitude = models.DecimalField(max_digits=9, decimal_places=6)
+#     policy = RichTextField()
+#     public_offer = RichTextField(blank=True, null=True)
 
-    # name_ru = models.CharField(max_length=255,blank=True, null=True)
-    # name_en = models.CharField(max_length=255,blank=True, null=True)
-    # address_ru = models.CharField(max_length=255,blank=True, null=True)
-    # address_en = models.CharField(max_length=255,blank=True, null=True)
-
-    # description_ru = models.TextField(blank=True, null=True)
-    # description_en = models.TextField(blank=True, null=True)
-
-    # policy = RichTextField(blank=True, null=True)
-    # policy = RichTextField(blank=True, null=True)
-
-    # public_offer_ru = RichTextField(blank=True, null=True)
-    # public_offer_en = RichTextField(blank=True, null=True)
-    def __str__(self):
-        return self.name
+#     def __str__(self):
+#         return self.name
 
 
 class UserManager(BaseUserManager):
@@ -53,7 +40,7 @@ class User(AbstractBaseUser, PermissionsMixin):
     is_active = models.BooleanField(default=True)
     is_staff = models.BooleanField(default=False)
     date_joined = models.DateTimeField(auto_now_add=True)
-    company = models.ForeignKey(Company, on_delete=models.CASCADE, null=True, blank=True)
+    # company = models.ForeignKey(Company, on_delete=models.CASCADE, null=True, blank=True)
 
     USERNAME_FIELD = 'phone_number'
     REQUIRED_FIELDS = []
