@@ -64,7 +64,7 @@ ROOT_URLCONF = 'config.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [BASE_DIR, 'templates'],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -131,15 +131,16 @@ JAZZMIN_SETTINGS = {
     "site_title": "Tashkent-Marker ERP",
     "site_header": "Tashkent-Marker ERP",
     "site_brand": "Tashkent-Marker ERP",
-    "site_logo": "path/to/logo.png",
-    "login_logo": None,
-    "login_logo_dark": None,
+    "site_logo": "assets/images/Tashkent Market.png",
+    "login_logo": 'assets/images/logo_size.jpg',
+    "login_logo_dark": "assets/images/logo_size.jpg",
     "site_logo_classes": "img-circle",
-    "site_icon": None,
+    "site_icon": 'assets/images/logo_size.jpg',
     "welcome_sign": "Welcome to the Tashkent-Marker ERP superadmin panel",
     "copyright": "Acme Tashkent-Marker ERP Ltd",
-    "search_model": ["auth.User"],
+    "search_model": ["users.User"],
     "user_avatar": None,
+    "navbar": "navbar-navy navbar-dark",
 
     "show_sidebar": True,
     "navigation_expanded": False,
@@ -165,7 +166,41 @@ JAZZMIN_SETTINGS = {
     "use_google_fonts_cdn": True,
     "show_ui_builder": False,
     "changeform_format": "horizontal_tabs",
-    "changeform_format_overrides": {"auth.user": "collapsible", "auth.group": "vertical_tabs"},
+    "changeform_format_overrides": {"users.user": "collapsible", "auth.group": "vertical_tabs"},
+}
+
+JAZZMIN_UI_TWEAKS = {
+    "navbar_small_text": False,
+    "footer_small_text": False,
+    "body_small_text": False,
+    "brand_small_text": False,
+    "brand_colour": "navbar-navy",
+    "accent": "accent-primary",
+    "navbar": "navbar-navy navbar-dark",
+    "no_navbar_border": False,
+    "navbar_fixed": True,
+    "layout_boxed": False,
+    "footer_fixed": True,
+    "sidebar_fixed": True,
+    "sidebar": "sidebar-dark-navy",
+    "sidebar_nav_small_text": False,
+    "sidebar_disable_expand": False,
+    "sidebar_nav_child_indent": False,
+    "sidebar_nav_compact_style": False,
+    "sidebar_nav_legacy_style": False,
+    "sidebar_nav_flat_style": False,
+    "footer": "sidebar-dark-navy",
+    "theme": "default",
+    "dark_mode_theme": None,
+    "button_classes": {
+        "primary": "btn-primary",
+        "secondary": "btn-secondary",
+        "info": "btn-info",
+        "warning": "btn-warning",
+        "danger": "btn-danger",
+        "success": "btn-success",
+        "language_chooser": True,
+    }
 }
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
@@ -173,3 +208,9 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 STRIPE_SECRET_KEY = 'sk_test_51O2EEvBJlouxhpbibHG4gUqjIlbo9SazFPvd31OkBpazbyQVNEgfoelcaCrKSFN1Ln5RlNEwGW0l4BvM5GIyrA6b009ZHvBvu0'
 STRIPE_PUBLISHABLE_KEY = 'pk_test_51O2EEvBJlouxhpbitwOhBgXbdslgiysOC4AcLN8S2JIByp7WRZYVbX1ajnlMbzs5V68wbtDHcggCfFbXb7YqoOXM00CvuF8RUo'
 STRIPE_WEBHOOK_SECRET = 'whsec_64b556bb62845a1f2fb421940e09b77e0dece0b49d898df0848963fff8e065fc'
+# # STRIPE_WEBHOOK_SECRET = 'whsec_4iF0vkxpWQHGKdbbLs5IPFrmXpISGc1K'
+
+# STRIPE_SECRET_KEY = 'pk_live_51O2EEvBJlouxhpbibp6ZWaWkOLufBx6kQ8Ul976fyDYQhcLyBWSFRwsHkRj4CwbYdp5Q6uOjvcyG0LIswpMG8xOl002nbWrUIl'
+# STRIPE_PUBLISHABLE_KEY = 'pk_live_51O2EEvBJlouxhpbibp6ZWaWkOLufBx6kQ8Ul976fyDYQhcLyBWSFRwsHkRj4CwbYdp5Q6uOjvcyG0LIswpMG8xOl002nbWrUIl'
+# STRIPE_WEBHOOK_SECRET = 'whsec_64b556bb62845a1f2fb421940e09b77e0dece0b49d898df0848963fff8e065fc'
+# # STRIPE_WEBHOOK_SECRET = 'whsec_4iF0vkxpWQHGKdbbLs5IPFrmXpISGc1K'

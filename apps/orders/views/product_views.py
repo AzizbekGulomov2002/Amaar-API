@@ -28,23 +28,6 @@ class ProductViewSet(viewsets.ModelViewSet):
     permission_classes = [AllowAny]
     search_fields = ['name_uz', 'name_ru', 'name_en', 'description_uz', 'description_ru', 'description_en']
 
-    def destroy(self, request, *args, **kwargs):
-        instance = self.get_object()
-        self.perform_destroy(instance)
-        return Response(status=status.HTTP_204_NO_CONTENT)
-
-    def perform_destroy(self, instance):
-        ProductSerializer.delete_stripe_product(instance)
-        instance.delete()
-        return Response(status=status.HTTP_204_NO_CONTENT)
-
-    def get_serializer_context(self):
-        context = super().get_serializer_context()
-        context.update({
-            'request': self.request
-        })
-        return context
-
 
 class BestProductsListView(generics.ListAPIView):
     queryset = Product.objects.filter(best_deals=True)
@@ -65,19 +48,3 @@ class AllCategoryViewSet(viewsets.ModelViewSet):
         return queryset
 
 
-class ProductImageCreateView(generics.CreateAPIView):
-    queryset = ProductImage.objects.all()
-    serializer_class = ProductImageSerializer
-    parser_classes = (MultiPartParser, FormParser)
-
-    def create(self, request, *args, **kwargs):
-        serializer = self.get_serializer(data=request.data)
-        serializer.is_valid(raise_exception=True)
-        self.perform_create(serializer)
-
-        # Update Stripe product with new image URLs
-        product = serializer.instance.product
-        ProductSerializer.update_stripe_product(product, request)
-
-        headers = self.get_success_headers(serializer.data)
-        return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)

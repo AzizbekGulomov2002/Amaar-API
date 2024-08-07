@@ -1,7 +1,9 @@
-from rest_framework import viewsets, generics, status
+from rest_framework import status
+from rest_framework import viewsets, generics
 from rest_framework.decorators import action
 from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
+from rest_framework.views import APIView
 
 from apps.orders.models.orders import OrderHistory, Order
 from apps.orders.serializers.order_serializer import OrderHistoryIDSerializer, OrderHistoryBaseSerializers, \
@@ -41,25 +43,27 @@ class OrderListAPIView(generics.ListCreateAPIView):
         return queryset
 
 
-class OrderDetailAPIView(generics.RetrieveUpdateDestroyAPIView):
-    serializer_class = OrderSerializer
-    permission_classes = [AllowAny]
+class UpdateDeliveryStatusView(APIView):
+    def post(self, request, *args, **kwargs):
+        order_id = request.data.get('order_id')
+        delivery_status = request.data.get('delivery_status')
 
-    def get_queryset(self):
-        queryset = Order.objects.all().order_by('-id')
-        user_id = self.request.query_params.get('user_id', None)
-        if user_id is not None:
-            queryset = queryset.filter(user_id=user_id)
-        return queryset
+        try:
+            order = Order.objects.get(id=order_id)
+        except Order.DoesNotExist:
+            return Response({'error': 'Order not found'}, status=status.HTTP_404_NOT_FOUND)
 
-    def perform_create(self, serializer):
-        serializer.save()
+        if order.type_order != 'cash':
+            return Response({'error': 'This endpoint is only for cash payments'}, status=status.HTTP_400_BAD_REQUEST)
 
-    @action(detail=True, methods=['post'])
-    def create_payment_session(self, request, pk=None):
-        order = self.get_object()
-        serializer = self.get_serializer(order)
-        payment_data = serializer.generate_payment_link(serializer.validated_data['products'])
-        if 'error' in payment_data:
-            return Response({'detail': payment_data['error']}, status=status.HTTP_400_BAD_REQUEST)
-        return Response(payment_data, status=status.HTTP_200_OK)
+        if delivery_status == 'delivered':
+            order.order_status = 'delivered'
+            order.payment_status = 'succeeded'
+        elif delivery_status == 'canceled':
+            order.order_status = 'canceled'
+            order.payment_status = 'canceled'
+        else:
+            return Response({'error': 'Invalid delivery status'}, status=status.HTTP_400_BAD_REQUEST)
+
+        order.save()
+        return Response({'status': 'success'}, status=status.HTTP_200_OK)
