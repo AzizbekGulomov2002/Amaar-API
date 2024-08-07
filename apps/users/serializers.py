@@ -1,7 +1,7 @@
 from django.contrib.auth import authenticate
 from rest_framework import serializers
 
-from .models import User, Company
+from .models import User
 
 
 class RegisterSerializer(serializers.ModelSerializer):
@@ -36,7 +36,4 @@ class UserSerializer(serializers.ModelSerializer):
         fields = ['id', 'phone_number', 'name', 'is_active', 'is_staff', 'date_joined', 'company']
 
 
-class CompanySerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Company
-        fields = '__all__'
+

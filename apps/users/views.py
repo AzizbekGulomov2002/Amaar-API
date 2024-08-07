@@ -3,9 +3,8 @@ from rest_framework.authtoken.models import Token
 from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
 from tutorial.quickstart.serializers import UserSerializer
-
-from .models import User, Company
-from .serializers import RegisterSerializer, LoginSerializer, CompanySerializer
+from .models import User
+from .serializers import RegisterSerializer, LoginSerializer
 
 
 class RegisterView(generics.CreateAPIView):
@@ -43,13 +42,4 @@ class UserDetailsAPIView(generics.RetrieveUpdateDestroyAPIView):
     permission_classes = [AllowAny]
 
 
-class CompanyListCreateView(generics.ListCreateAPIView):
-    queryset = Company.objects.all()
-    serializer_class = CompanySerializer
-    permission_classes = [AllowAny]
 
-
-class CompanyDetailView(generics.RetrieveUpdateDestroyAPIView):
-    queryset = Company.objects.all()
-    serializer_class = CompanySerializer
-    permission_classes = [AllowAny]
