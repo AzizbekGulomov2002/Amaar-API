@@ -6,12 +6,7 @@ class SpecialOfferAdmin(admin.ModelAdmin):
     list_display = ['title_en', 'product']
     search_fields = ['title_en', 'title_ru', 'title_uz']
 
-
-@admin.register(Company)
-class CompanyAdmin(admin.ModelAdmin):
-    list_display = ('name', 'callcenter', 'mail', 'free_delivery', 'delivery_price')
-    search_fields = ('name', 'callcenter', 'mail')
-    list_filter = ('free_delivery', 'delivery_price')
+admin.site.register(Company)
 
 @admin.register(SocialNetworks)
 class SocialNetworksAdmin(admin.ModelAdmin):
