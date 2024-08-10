@@ -67,9 +67,9 @@ class Recall(models.Model):
 
 
 class AboutUs(models.Model):
-    title_uz = models.RichTextField()
-    title_ru = models.RichTextField()
-    title_en = models.RichTextField()
+    title_uz = RichTextField()
+    title_ru = RichTextField()
+    title_en = RichTextField()
 
     def __str__(self):
         return self.title_en
