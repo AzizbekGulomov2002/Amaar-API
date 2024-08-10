@@ -10,4 +10,4 @@ class GeneratePaymentLinkSerializer(serializers.Serializer):
 class PaymentSerializer(serializers.ModelSerializer):
     class Meta:
         model = Payment
-        fields = '__all__'
+        fields = ['id', 'order', 'stripe_charge_id', 'amount', 'created_at']

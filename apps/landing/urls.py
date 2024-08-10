@@ -6,7 +6,8 @@ from apps.landing.views.landing_views import *
 router = DefaultRouter()
 router.register(r'special-offers', SpecialOfferViewSet)
 router.register(r'news', NewsViewSet)
-router.register(r'company', CompanyViewSet)
+router.register(r'companies', CompanyViewSet)
+router.register(r'social-networks', SocialNetworksViewSet)
 router.register(r'recalls', RecallViewSet)
 
 urlpatterns = [

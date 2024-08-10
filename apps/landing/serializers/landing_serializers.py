@@ -6,10 +6,11 @@ from apps.landing.models.landing import *
 class SpecialOfferSerializer(serializers.ModelSerializer):
     class Meta:
         model = SpecialOffer
-        fields = ['image', 'title_uz', 'title_ru', 'title_en', 'product']
+        fields = ['id','image', 'title_uz', 'title_ru', 'title_en', 'product']
     def to_representation(self, instance):
         representation = super().to_representation(instance)
         representation['product'] = {
+            'id': instance.product.id,
             'name_uz': instance.product.name_uz,
             'name_ru': instance.product.name_ru,
             'name_en': instance.product.name_en,
@@ -22,12 +23,17 @@ class SpecialOfferSerializer(serializers.ModelSerializer):
 class CompanySerializer(serializers.ModelSerializer):
     class Meta:
         model = Company
-        fields = ['title', 'url']
+        fields = '__all__'
+
+class SocialNetworksSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = SocialNetworks
+        fields = '__all__'
 
 class NewsSerializer(serializers.ModelSerializer):
     class Meta:
         model = News
-        fields = ['title_uz', 'title_ru', 'title_en', 'desc_uz', 'desc_ru', 'desc_en', 'image', 'company']
+        fields = ["id",'title_uz', 'title_ru', 'title_en', 'desc_uz', 'desc_ru', 'desc_en', 'image', 'company']
     def to_representation(self, instance):
         representation = super().to_representation(instance)
         representation['company'] = {
@@ -40,7 +46,7 @@ class NewsSerializer(serializers.ModelSerializer):
 class RecallSerializer(serializers.ModelSerializer):
     class Meta:
         model = Recall
-        fields = ['client',  'phone', 'name', 'email', 'comment']
+        fields = ["id",'client',  'phone', 'name', 'email', 'comment']
 
     def to_representation(self, instance):
         representation = super().to_representation(instance)

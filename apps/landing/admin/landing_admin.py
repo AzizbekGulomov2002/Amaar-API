@@ -9,8 +9,15 @@ class SpecialOfferAdmin(admin.ModelAdmin):
 
 @admin.register(Company)
 class CompanyAdmin(admin.ModelAdmin):
-    list_display = ['title', 'url']
-    search_fields = ['title']
+    list_display = ('name', 'callcenter', 'mail', 'free_delivery', 'delivery_price')
+    search_fields = ('name', 'callcenter', 'mail')
+    list_filter = ('free_delivery', 'delivery_price')
+
+@admin.register(SocialNetworks)
+class SocialNetworksAdmin(admin.ModelAdmin):
+    list_display = ('company', 'name', 'link')
+    search_fields = ('company__name', 'name', 'link')
+    list_filter = ('company',)
 
 @admin.register(News)
 class NewsAdmin(admin.ModelAdmin):
