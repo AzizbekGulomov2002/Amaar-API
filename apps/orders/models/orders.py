@@ -51,6 +51,8 @@ class Order(models.Model):
             elif self.order_status == 'canceled':
                 self.payment_status = 'canceled'
                 Payment.objects.filter(order=self).update(status='canceled')
+                for item in self.products.all():
+                    item.restore_product_quantity()
         super().save(*args, **kwargs)
 
 
@@ -69,16 +71,13 @@ class OrderItem(models.Model):
             self.product.quantity -= self.quantity
             if self.product.quantity < 0:
                 raise ValidationError(f"Insufficient quantity for product {self.product.name_uz}.")
-            self.product.save()
-
+        self.product.save()
         super().save(*args, **kwargs)
 
-    def delete(self, *args, **kwargs):
-        if self.order.type_order == 'cash' and self.order.order_status == 'canceled':
+    def restore_product_quantity(self):
+        if self.order.type_order == 'cash':
             self.product.quantity += self.quantity
             self.product.save()
-
-        super().delete(*args, **kwargs)
 
     def __str__(self):
         return f"{self.quantity} of {self.product.name_uz}"

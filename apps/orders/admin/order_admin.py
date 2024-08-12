@@ -91,13 +91,6 @@ class OrderItemAdmin(admin.ModelAdmin):
     list_filter = ('order__address', 'product')
 
 
-@admin.register(Order)
-class OrderAdmin(admin.ModelAdmin):
-    list_display = ('id', 'address')
-    search_fields = ('address',)
-    inlines = [OrderItemInline]
-
-
 @admin.register(OrderHistory)
 class OrderHistoryAdmin(admin.ModelAdmin):
     list_display = ['order', 'user', 'date', 'status']
