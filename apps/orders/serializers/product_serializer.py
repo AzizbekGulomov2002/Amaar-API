@@ -5,6 +5,7 @@ import stripe
 from django.urls import reverse
 from django.utils.http import urlencode
 from rest_framework import serializers
+
 from apps.orders.models.products import ProductImage, Product, Category
 
 
@@ -106,3 +107,9 @@ class CategorySerializer(serializers.ModelSerializer):
     class Meta:
         model = Category
         fields = ['id', 'name_uz', 'name_ru', 'name_en', 'image', 'products']
+
+
+class OnlyCategorySerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Category
+        fields = ['id', 'name_uz', 'name_ru', 'name_en', 'image']

@@ -1,22 +1,14 @@
 from django.contrib import admin
 from apps.landing.models.landing import *
 
-@admin.register(SpecialOffer)
-class SpecialOfferAdmin(admin.ModelAdmin):
-    list_display = ['title_en', 'product']
-    search_fields = ['title_en', 'title_ru', 'title_uz']
 
+admin.site.register(SpecialOffer)
 
-@admin.register(Company)
-class CompanyAdmin(admin.ModelAdmin):
-    list_display = ['title', 'url']
-    search_fields = ['title']
+admin.site.register(Company)
 
-@admin.register(News)
-class NewsAdmin(admin.ModelAdmin):
-    list_display = ['title_en', 'company']
-    search_fields = ['title_en', 'title_ru', 'title_uz']
-    list_filter = ['company']
+admin.site.register(SocialNetworks)
+
+admin.site.register(News)
 
 
 @admin.register(Recall)

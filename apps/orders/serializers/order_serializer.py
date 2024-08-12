@@ -42,11 +42,9 @@ class OrderSerializer(serializers.ModelSerializer):
             order_status = Order.Status.SUCCESS
             payment_status = Order.PaymentStatus.PENDING
 
-        # Create the order
         order = Order.objects.create(user=user, order_status=order_status, payment_status=payment_status,
                                      **validated_data)
 
-        # Create order items and update product quantities
         for product_data in products_data:
             OrderItem.objects.create(order=order, **product_data)
             if order_type == Order.TypeOrder.CASH:
@@ -66,7 +64,6 @@ class OrderSerializer(serializers.ModelSerializer):
             )
             return self.to_representation(order)
 
-        # Handle stripe orders: generate a payment link
         payment_link_data = ProductSerializer.generate_payment_link(order.products.all(), self.context['request'])
 
         for product_data in products_data:
@@ -113,7 +110,6 @@ class OrderSerializer(serializers.ModelSerializer):
         } if instance.user else None
 
         return representation
-
 
 
 class OrderHistoryIDSerializer(serializers.ModelSerializer):

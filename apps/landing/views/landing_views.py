@@ -9,10 +9,15 @@ class SpecialOfferViewSet(viewsets.ModelViewSet):
     queryset = SpecialOffer.objects.all()
     serializer_class = SpecialOfferSerializer
 
+
 class CompanyViewSet(viewsets.ModelViewSet):
-    permission_classes = [AllowAny]
     queryset = Company.objects.all()
     serializer_class = CompanySerializer
+
+class SocialNetworksViewSet(viewsets.ModelViewSet):
+    queryset = SocialNetworks.objects.all()
+    serializer_class = SocialNetworksSerializer
+    
 
 class NewsViewSet(viewsets.ModelViewSet):
     permission_classes = [AllowAny]
