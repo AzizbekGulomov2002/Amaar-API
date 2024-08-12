@@ -4,6 +4,7 @@ from rest_framework.exceptions import ValidationError
 from apps.orders.models.orders import OrderItem, Order, OrderHistory
 from apps.orders.models.payment import Payment
 from apps.orders.models.products import Product
+from apps.orders.serializers.product_serializer import ProductSerializer
 from apps.users.models import User
 from apps.users.serializers import UserSerializer
 
@@ -20,7 +21,7 @@ class OrderSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Order
-        fields = ['id', 'address', 'latitude', 'longitude', 'comment', 'products', 'user', 'created_at']
+        fields = ['id', 'address', 'latitude', 'longitude', 'comment', 'products', 'user', 'created_at', 'type_order']
 
     def validate_products(self, products):
         for product_data in products:
@@ -32,33 +33,57 @@ class OrderSerializer(serializers.ModelSerializer):
     def create(self, validated_data):
         products_data = validated_data.pop('products')
         user = validated_data.pop('user')
-        order_type = validated_data.get('type_order', 'stripe')
+        order_type = validated_data.get('type_order', Order.TypeOrder.STRIPE)
 
-        if order_type == 'stripe':
-            order_status = 'pending'
-            payment_status = 'pending'
+        if order_type == Order.TypeOrder.STRIPE:
+            order_status = Order.Status.PENDING
+            payment_status = Order.PaymentStatus.PENDING
         else:  # cash
-            order_status = 'success'
-            payment_status = 'pending'
+            order_status = Order.Status.SUCCESS
+            payment_status = Order.PaymentStatus.PENDING
 
+        # Create the order
         order = Order.objects.create(user=user, order_status=order_status, payment_status=payment_status,
                                      **validated_data)
+
+        # Create order items and update product quantities
         for product_data in products_data:
             OrderItem.objects.create(order=order, **product_data)
-
-        if order_type == 'cash':
-            for product_data in products_data:
+            if order_type == Order.TypeOrder.CASH:
                 product = product_data['product']
                 product.quantity -= product_data['quantity']
                 product.save()
+
+        # Handle cash orders: no payment link generation, just return the order data
+        if order_type == Order.TypeOrder.CASH:
             Payment.objects.create(
                 order=order,
                 product=product,
                 price=product.price,
                 quantity=product_data['quantity'],
-                status='pending',
+                status=Payment.PaymentStatus.PENDING,
+                type_order=Order.TypeOrder.CASH
             )
-        return order
+            return self.to_representation(order)
+
+        # Handle stripe orders: generate a payment link
+        payment_link_data = ProductSerializer.generate_payment_link(order.products.all(), self.context['request'])
+
+        for product_data in products_data:
+            Payment.objects.create(
+                order=order,
+                product=product_data['product'],
+                price=product_data['product'].price,
+                quantity=product_data['quantity'],
+                status=Payment.PaymentStatus.PENDING,
+                stripe_session_id=payment_link_data['session_id'],
+                type_order=Order.TypeOrder.STRIPE,
+            )
+
+        order_data = self.to_representation(order)
+        order_data['payment_link'] = payment_link_data['payment_url']
+
+        return order_data
 
     def to_representation(self, instance):
         request = self.context.get('request')
@@ -88,6 +113,7 @@ class OrderSerializer(serializers.ModelSerializer):
         } if instance.user else None
 
         return representation
+
 
 
 class OrderHistoryIDSerializer(serializers.ModelSerializer):

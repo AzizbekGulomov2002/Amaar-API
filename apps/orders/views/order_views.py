@@ -42,6 +42,13 @@ class OrderListAPIView(generics.ListCreateAPIView):
             queryset = queryset.filter(user_id=user_id)
         return queryset
 
+    def create(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        order_data = serializer.save()
+
+        return Response(order_data, status=status.HTTP_201_CREATED)
+
 
 class UpdateDeliveryStatusView(APIView):
     def post(self, request, *args, **kwargs):

@@ -41,6 +41,18 @@ class Order(models.Model):
     def total_quantity(self):
         return sum(item.quantity for item in self.products.all())
 
+    def save(self, *args, **kwargs):
+        from apps.orders.models.payment import Payment
+
+        if self.type_order == 'cash':
+            if self.order_status == 'delivered':
+                self.payment_status = 'succeeded'
+                Payment.objects.filter(order=self).update(status='succeeded')
+            elif self.order_status == 'canceled':
+                self.payment_status = 'canceled'
+                Payment.objects.filter(order=self).update(status='canceled')
+        super().save(*args, **kwargs)
+
 
 class OrderItem(models.Model):
     order = models.ForeignKey(Order, related_name='products', on_delete=models.CASCADE)
@@ -53,8 +65,20 @@ class OrderItem(models.Model):
                 f"Insufficient quantity for product {self.product.name_uz}. Available: {self.product.quantity}, Requested: {self.quantity}")
 
     def save(self, *args, **kwargs):
-        self.clean()
+        if self.pk is None and self.order.type_order == 'cash':
+            self.product.quantity -= self.quantity
+            if self.product.quantity < 0:
+                raise ValidationError(f"Insufficient quantity for product {self.product.name_uz}.")
+            self.product.save()
+
         super().save(*args, **kwargs)
+
+    def delete(self, *args, **kwargs):
+        if self.order.type_order == 'cash' and self.order.order_status == 'canceled':
+            self.product.quantity += self.quantity
+            self.product.save()
+
+        super().delete(*args, **kwargs)
 
     def __str__(self):
         return f"{self.quantity} of {self.product.name_uz}"

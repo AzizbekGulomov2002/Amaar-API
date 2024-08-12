@@ -3,6 +3,7 @@ from datetime import datetime
 import stripe
 from django.conf import settings
 from django.core.cache import cache
+from django.shortcuts import render
 from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.views import APIView
@@ -53,7 +54,7 @@ class CreatePaymentView(APIView):
                 }, status=status.HTTP_429_TOO_MANY_REQUESTS)
 
         try:
-            payment_link_data = ProductSerializer.generate_payment_link(products)
+            payment_link_data = ProductSerializer.generate_payment_link(products,request)
 
             if "error" in payment_link_data:
                 return Response(payment_link_data, status=status.HTTP_400_BAD_REQUEST)
@@ -87,3 +88,12 @@ class CreatePaymentView(APIView):
             return Response({'error': str(e)}, status=status.HTTP_400_BAD_REQUEST)
         except Exception as e:
             return Response({'error': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+
+def payment_success(request):
+    session_id = request.GET.get('session_id', '')
+    return render(request, 'payment_success.html', {'session_id': session_id})
+
+
+def payment_fail(request):
+    return render(request, 'payment_fail.html')

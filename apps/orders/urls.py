@@ -1,6 +1,7 @@
 from django.urls import path, include
 from rest_framework.routers import DefaultRouter
 
+from .views import payment_success, payment_fail
 from .views.infos_views import BannerViewSet, DeliveryInfoViewSet, PolicyAndPrivacyViewSet, PublicOfferViewSet, \
     ReturnPolicyViewSet, DashboardView
 from .views.order_views import OrderHistoryViewSet, OrderListAPIView
@@ -28,5 +29,7 @@ urlpatterns = [
     path('orders/', OrderListAPIView.as_view(), name='order-list'),
     path('order-history/users/<int:user_id>/', UserOrderHistoryAPIView.as_view(), name='user-order-history'),
     path('dashboard/', DashboardView.as_view(), name='dashboard'),
+    path('success/', payment_success, name='payment_success'),
+    path('fail/', payment_fail, name='payment_fail'),
 
 ]

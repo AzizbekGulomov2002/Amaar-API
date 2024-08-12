@@ -54,7 +54,11 @@
 
 {% block extrajs %}
     <script>
-
+        document.addEventListener('DOMContentLoaded', function () {
+            document.getElementById('exit').addEventListener('click', function () {
+                window.location.href = '/admin/orders/product/';
+            });
+        });
     </script>
     {{ block.super }}
 {% endblock %}

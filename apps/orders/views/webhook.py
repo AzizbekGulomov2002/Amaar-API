@@ -56,12 +56,9 @@ def stripe_webhook(request):
 def handle_payment_status(session_id, status):
     try:
         payments = Payment.objects.filter(stripe_session_id=session_id)
-        logger.info(f"Found payments: {payments}")
         for payment in payments:
             payment.status = status
             payment.save()
-            logger.info(f"Updated payment status to: {status}")
-
             order = payment.order
             order.payment_status = status
 
@@ -72,8 +69,10 @@ def handle_payment_status(session_id, status):
                 product.save()
             elif status in ['failed', 'canceled', 'expired']:
                 order.order_status = 'canceled'
+                product = payment.product
+                product.quantity += payment.quantity
+                product.save()
 
             order.save()
-            logger.info(f"Updated order status to: {order.order_status}, payment status to: {order.payment_status}")
     except Payment.DoesNotExist:
         logger.error(f"No payments found with session_id: {session_id}")
