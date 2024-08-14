@@ -40,8 +40,8 @@ class AllCategoryViewSet(viewsets.ModelViewSet):
     permission_classes = [IsAuthenticated]
     filter_backends = [DjangoFilterBackend, filters.OrderingFilter, filters.SearchFilter]
     filterset_class = CategoryFilter
-    ordering_fields = ['name']
-    search_fields = ['name']
+    # ordering_fields = ['name']
+    # search_fields = ['name']
 
     def get_queryset(self):
         queryset = Category.objects.all()
