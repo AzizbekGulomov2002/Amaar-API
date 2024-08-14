@@ -69,7 +69,7 @@ class ProductSerializer(serializers.ModelSerializer):
 
             line_items.append({
                 'price_data': {
-                    'currency': 'usd',
+                    'currency': 'aed',
                     'product_data': {
                         'name': product.name_uz,
                         'description': product.description_uz,

@@ -51,7 +51,7 @@ async def send_order_to_telegram_async(order, created=False, deleted=False):
         f"📦 {bold('Order Status:')} {await sync_to_async(order.get_order_status_display)()}",
         f"🛍 {bold('Products Ordered:')}{product_details}",
         f"🔢 {bold('Total Quantity:')} {total_quantity}",
-        f"💸 {bold('Total Price:')} AED{total_price:.2f}",
+        f"💸 {bold('Total Price:')} {total_price:.2f} AED",
         f"🗺️ {bold('Location:')} [Google Maps]({google_maps_url})",
         f"🕒 {bold('Created At:')} {order.created_at.strftime('%Y-%m-%d %H:%M:%S')}",
         sep="\n"
