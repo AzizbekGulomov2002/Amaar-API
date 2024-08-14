@@ -106,10 +106,10 @@ class CategorySerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Category
-        fields = ['id', 'name_ru', 'name_en', 'image', 'products']
+        fields = ['id',"name_uz", 'name_ru', 'name_en', 'image', 'products']
 
 
 class OnlyCategorySerializer(serializers.ModelSerializer):
     class Meta:
         model = Category
-        fields = ['id', 'name_ru', 'name_en', 'image']
+        fields = ['id', "name_uz",'name_ru', 'name_en', 'image']

@@ -2,7 +2,7 @@ from django.db import models
 
 
 class TranslatableModel(models.Model):
-    # name_uz = models.CharField(max_length=255, null=True, blank=True)
+    name_uz = models.CharField(max_length=255, null=True, blank=True)
     name_ru = models.CharField(max_length=255, null=True, blank=True)
     name_en = models.CharField(max_length=255, null=True, blank=True)
     description_uz = models.TextField(null=True, blank=True)
@@ -17,14 +17,14 @@ class TranslatableModel(models.Model):
 
 
 class Category(models.Model):
-    # name_uz = models.CharField(max_length=255, null=True, blank=True)
+    name_uz = models.CharField(max_length=255, null=True, blank=True)
     image = models.ImageField(upload_to='category_images/')
     name_ru = models.CharField(max_length=255, null=True, blank=True)
     name_en = models.CharField(max_length=255, null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
-        return self.name_ru or self.name_en
+        return self.name_uz or self.name_ru or self.name_en
 
     class Meta:
         ordering = ['name_ru', 'name_en']
