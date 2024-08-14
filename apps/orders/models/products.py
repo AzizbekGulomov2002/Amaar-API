@@ -18,16 +18,16 @@ class TranslatableModel(models.Model):
 
 class Category(models.Model):
     name_uz = models.CharField(max_length=255, null=True, blank=True)
+    image = models.ImageField(upload_to='category_images/')
     name_ru = models.CharField(max_length=255, null=True, blank=True)
     name_en = models.CharField(max_length=255, null=True, blank=True)
-    image = models.ImageField(upload_to='category_images/')
     created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
         return self.name_uz or self.name_ru or self.name_en
 
     class Meta:
-        ordering = ['name_uz', 'name_ru', 'name_en']
+        ordering = ['name_ru', 'name_en']
         verbose_name_plural = 'Categories'
 
 
