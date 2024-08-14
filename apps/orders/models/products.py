@@ -27,7 +27,7 @@ class Category(models.Model):
         return self.name_ru or self.name_en
 
     class Meta:
-        ordering = ['name_uz', 'name_ru', 'name_en']
+        ordering = ['name_ru', 'name_en']
         verbose_name_plural = 'Categories'
 
 
