@@ -3,6 +3,7 @@ from rest_framework.authtoken.models import Token
 from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
 from tutorial.quickstart.serializers import UserSerializer
+
 from .models import User
 from .serializers import RegisterSerializer, LoginSerializer
 
@@ -40,6 +41,3 @@ class UserDetailsAPIView(generics.RetrieveUpdateDestroyAPIView):
     queryset = User.objects.all()
     serializer_class = UserSerializer
     permission_classes = [AllowAny]
-
-
-
