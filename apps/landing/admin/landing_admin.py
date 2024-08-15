@@ -1,14 +1,26 @@
 from django.contrib import admin
+
 from apps.landing.models.landing import *
 
 
-admin.site.register(SpecialOffer)
+@admin.register(SpecialOffer)
+class SpecialOfferAdmin(admin.ModelAdmin):
+    ...
 
-admin.site.register(Company)
 
-admin.site.register(SocialNetworks)
+@admin.register(Company)
+class CompanyAdmin(admin.ModelAdmin):
+    ...
 
-admin.site.register(News)
+
+@admin.register(SocialNetworks)
+class SocialNetworksAdmin(admin.ModelAdmin):
+    ...
+
+
+@admin.register(News)
+class NewsAdmin(admin.ModelAdmin):
+    ...
 
 
 @admin.register(Recall)

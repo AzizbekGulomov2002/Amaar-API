@@ -1,12 +1,13 @@
-# serializers.py
 from rest_framework import serializers
+
 from apps.landing.models.landing import *
 
 
 class SpecialOfferSerializer(serializers.ModelSerializer):
     class Meta:
         model = SpecialOffer
-        fields = ['id','image', 'title_uz', 'title_ru', 'title_en', 'product']
+        fields = ['id', 'image', 'title_uz', 'title_ru', 'title_en', 'product']
+
     def to_representation(self, instance):
         representation = super().to_representation(instance)
         representation['product'] = {
@@ -25,15 +26,18 @@ class CompanySerializer(serializers.ModelSerializer):
         model = Company
         fields = '__all__'
 
+
 class SocialNetworksSerializer(serializers.ModelSerializer):
     class Meta:
         model = SocialNetworks
         fields = '__all__'
 
+
 class NewsSerializer(serializers.ModelSerializer):
     class Meta:
         model = News
-        fields = ["id",'title_uz', 'title_ru', 'title_en', 'desc_uz', 'desc_ru', 'desc_en', 'image', 'company']
+        fields = ["id", 'title_uz', 'title_ru', 'title_en', 'desc_uz', 'desc_ru', 'desc_en', 'image', 'company']
+
     def to_representation(self, instance):
         representation = super().to_representation(instance)
         representation['company'] = {
@@ -46,7 +50,7 @@ class NewsSerializer(serializers.ModelSerializer):
 class RecallSerializer(serializers.ModelSerializer):
     class Meta:
         model = Recall
-        fields = ["id",'client',  'phone', 'name', 'email', 'comment']
+        fields = ["id", 'client', 'phone', 'name', 'email', 'comment']
 
     def to_representation(self, instance):
         representation = super().to_representation(instance)

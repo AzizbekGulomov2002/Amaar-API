@@ -1,10 +1,9 @@
-from django.db import models
-from apps.orders.models import Product
 from ckeditor.fields import RichTextField
+from django.db import models
 
+from apps.orders.models.products import Product
 from apps.users.models import User
 
-# Create your models here.
 
 class SpecialOffer(models.Model):
     image = models.ImageField(upload_to='special_offers/')
@@ -15,6 +14,7 @@ class SpecialOffer(models.Model):
 
     def __str__(self):
         return self.title_en
+
 
 class Company(models.Model):
     name = models.CharField(max_length=200)
@@ -28,14 +28,17 @@ class Company(models.Model):
     delivery_price = models.FloatField()
 
     def __str__(self):
-        return self.title
+        return self.name
+
 
 class SocialNetworks(models.Model):
     company = models.ForeignKey(Company, on_delete=models.CASCADE)
     name = models.CharField(max_length=200)
     link = models.URLField()
+
     def __str__(self):
         return self.name
+
 
 class News(models.Model):
     title_uz = models.CharField(max_length=255)
@@ -51,7 +54,6 @@ class News(models.Model):
         return self.title_en
 
     class Meta:
-        verbose_name = "New"
         verbose_name_plural = "News"
 
 
@@ -63,7 +65,7 @@ class Recall(models.Model):
     comment = models.TextField()
 
     def __str__(self):
-        return f"{self.name} - {self.client.username}"
+        return f"{self.name} - {self.client.phone_number}"
 
 
 class AboutUs(models.Model):
@@ -75,5 +77,4 @@ class AboutUs(models.Model):
         return self.title_en
 
     class Meta:
-        verbose_name = "AboutUs"
-        verbose_name_plural = "AboutUs"
+        verbose_name_plural = "About Us"
