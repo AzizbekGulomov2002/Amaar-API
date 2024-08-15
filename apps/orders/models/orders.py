@@ -66,14 +66,6 @@ class OrderItem(models.Model):
             raise ValidationError(
                 f"Insufficient quantity for product {self.product.name_uz}. Available: {self.product.quantity}, Requested: {self.quantity}")
 
-    def save(self, *args, **kwargs):
-        if self.pk is None and self.order.type_order == 'cash':
-            self.product.quantity -= self.quantity
-            if self.product.quantity < 0:
-                raise ValidationError(f"Insufficient quantity for product {self.product.name_uz}.")
-        self.product.save()
-        super().save(*args, **kwargs)
-
     def restore_product_quantity(self):
         if self.order.type_order == 'cash':
             self.product.quantity += self.quantity

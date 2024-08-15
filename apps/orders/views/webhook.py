@@ -49,6 +49,15 @@ def stripe_webhook(request):
     elif event_type == 'payment_intent.expired':
         session = event['data']['object']
         handle_payment_status(session['id'], 'expired')
+        # TODO
+    elif event['type'] == 'checkout.session.expired':
+        session = event['data']['object']
+    elif event['type'] == 'payment_intent.canceled':
+        payment_intent = event['data']['object']
+    elif event['type'] == 'payment_intent.created':
+        payment_intent = event['data']['object']
+    elif event['type'] == 'payment_intent.payment_failed':
+        payment_intent = event['data']['object']
 
     return JsonResponse({'status': 'success'}, status=200)
 

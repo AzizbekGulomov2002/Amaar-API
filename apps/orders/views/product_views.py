@@ -1,12 +1,10 @@
 from django_filters.rest_framework import DjangoFilterBackend
-from rest_framework import viewsets, generics, status, filters
-from rest_framework.parsers import MultiPartParser, FormParser
-from rest_framework.permissions import AllowAny, IsAuthenticated,IsAuthenticatedOrReadOnly
-from rest_framework.response import Response
+from rest_framework import viewsets, generics, filters
+from rest_framework.permissions import AllowAny, IsAuthenticated, IsAuthenticatedOrReadOnly
 
 from apps.orders.filters import CategoryFilter, ProductFilter
-from apps.orders.models.products import Category, Product, ProductImage
-from apps.orders.serializers.product_serializer import CategorySerializer, ProductSerializer, ProductImageSerializer
+from apps.orders.models.products import Category, Product
+from apps.orders.serializers.product_serializer import CategorySerializer, ProductSerializer
 from apps.orders.views.base_views import BasePagination
 
 
@@ -40,11 +38,7 @@ class AllCategoryViewSet(viewsets.ModelViewSet):
     permission_classes = [IsAuthenticated]
     filter_backends = [DjangoFilterBackend, filters.OrderingFilter, filters.SearchFilter]
     filterset_class = CategoryFilter
-    # ordering_fields = ['name']
-    # search_fields = ['name']
 
     def get_queryset(self):
         queryset = Category.objects.all()
         return queryset
-
-

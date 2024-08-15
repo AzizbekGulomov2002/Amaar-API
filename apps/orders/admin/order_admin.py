@@ -40,7 +40,6 @@ class OrderAdminForm(ModelForm):
             print(f"Order saved with ID: {order.pk}")
 
         if order.type_order == 'cash':
-            print(f"Processing cash order: {order.pk}")
             if order.order_status == 'pending':
                 order.order_status = 'success'
                 order.payment_status = 'pending'

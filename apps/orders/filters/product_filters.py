@@ -1,6 +1,6 @@
 import django_filters
 
-from apps.orders.models import Category, Product
+from apps.orders.models.products import Category, Product
 
 
 class CategoryFilter(django_filters.FilterSet):

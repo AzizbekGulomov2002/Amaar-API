@@ -14,7 +14,7 @@ class ProductImageInline(admin.TabularInline):
 
 @admin.register(Category)
 class CategoryAdmin(admin.ModelAdmin):
-    pass
+    ...
 
 
 @admin.register(Product)

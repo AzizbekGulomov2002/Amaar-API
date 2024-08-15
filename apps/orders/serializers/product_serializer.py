@@ -57,7 +57,6 @@ class ProductSerializer(serializers.ModelSerializer):
             ProductImage.objects.filter(product=product).delete()
             for image in uploaded_images:
                 ProductImage.objects.create(product=product, image=image)
-
         return product
 
     @staticmethod
@@ -66,13 +65,14 @@ class ProductSerializer(serializers.ModelSerializer):
         for item in order_items:
             product = item.product
             images = [request.build_absolute_uri(image.image.url) for image in product.product_images.all()]
+            product_description = product.description_uz
 
             line_items.append({
                 'price_data': {
                     'currency': 'aed',
                     'product_data': {
                         'name': product.name_uz,
-                        'description': product.description_uz,
+                        'description': product_description,
                         'images': images,
                     },
                     'unit_amount': int(product.price * 100),
@@ -106,10 +106,10 @@ class CategorySerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Category
-        fields = ['id',"name_uz", 'name_ru', 'name_en', 'image', 'products']
+        fields = ['id', "name_uz", 'name_ru', 'name_en', 'image', 'products']
 
 
 class OnlyCategorySerializer(serializers.ModelSerializer):
     class Meta:
         model = Category
-        fields = ['id', "name_uz",'name_ru', 'name_en', 'image']
+        fields = ['id', "name_uz", 'name_ru', 'name_en', 'image']

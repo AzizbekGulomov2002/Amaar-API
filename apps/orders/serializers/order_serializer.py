@@ -23,7 +23,7 @@ class OrderSerializer(serializers.ModelSerializer):
         model = Order
         fields = ['id', 'address', 'latitude', 'longitude', 'comment', 'products', 'user', 'created_at', 'type_order']
 
-    def validate_products(self, products):
+    def validate_products(self, products):  # noqa
         for product_data in products:
             product = Product.objects.get(id=product_data['product'].id)
             if product.quantity < product_data['quantity']:
@@ -38,7 +38,7 @@ class OrderSerializer(serializers.ModelSerializer):
         if order_type == Order.TypeOrder.STRIPE:
             order_status = Order.Status.PENDING
             payment_status = Order.PaymentStatus.PENDING
-        else:  # cash
+        else:
             order_status = Order.Status.SUCCESS
             payment_status = Order.PaymentStatus.PENDING
 
@@ -52,7 +52,6 @@ class OrderSerializer(serializers.ModelSerializer):
                 product.quantity -= product_data['quantity']
                 product.save()
 
-        # Handle cash orders: no payment link generation, just return the order data
         if order_type == Order.TypeOrder.CASH:
             Payment.objects.create(
                 order=order,

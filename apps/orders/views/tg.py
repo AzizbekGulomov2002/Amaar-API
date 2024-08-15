@@ -14,7 +14,7 @@ dp = Dispatcher()
 def get_google_maps_url(lat, lng):
     params = {
         "q": f"{lat},{lng}",
-        "z": 15  # zoom level
+        "z": 15
     }
     return f"https://www.google.com/maps?{urlencode(params)}"
 
