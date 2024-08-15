@@ -57,10 +57,11 @@ MIDDLEWARE = [
     'django.middleware.common.CommonMiddleware',
 ]
 
+CORS_ALLOW_ALL_ORIGINS = False
 CORS_ALLOWED_ORIGINS = [
+    "https://api.tashkentmarket.ae",
     "https://tashkentmarket.ae",
 ]
-CORS_ALLOW_ALL_ORIGINS = True
 
 CORS_ALLOW_HEADERS = [
     'content-type',
