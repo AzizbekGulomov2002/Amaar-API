@@ -1,5 +1,6 @@
 import time
 from datetime import datetime
+
 import stripe
 from django.urls import reverse
 from django.utils.http import urlencode
@@ -60,14 +61,12 @@ class ProductSerializer(serializers.ModelSerializer):
         for item in order_items:
             product = item.product
             images = [request.build_absolute_uri(image.image.url) for image in product.product_images.all()]
-            product_description = product.description_uz
-
             line_items.append({
                 'price_data': {
                     'currency': 'aed',
                     'product_data': {
                         'name': product.name_uz,
-                        'description': product_description,
+                        'description': product.description_uz,
                         'images': images,
                     },
                     'unit_amount': int(product.price * 100),
@@ -75,9 +74,8 @@ class ProductSerializer(serializers.ModelSerializer):
                 'quantity': item.quantity,
             })
 
-        base_url = request.build_absolute_uri('/')
-        success_url = base_url + reverse('payment_success')
-        cancel_url = base_url + reverse('payment_fail')
+        success_url = request.build_absolute_uri(reverse('payment_success'))
+        cancel_url = request.build_absolute_uri(reverse('payment_fail'))
 
         session = stripe.checkout.Session.create(
             payment_method_types=['card'],
@@ -96,9 +94,9 @@ class ProductSerializer(serializers.ModelSerializer):
         }
 
 
-
 class ProductImportSerializer(serializers.Serializer):
     file = serializers.FileField()
+
     def validate_file(self, value):
         if not value.name.endswith('.xlsx'):
             raise serializers.ValidationError({
@@ -107,7 +105,6 @@ class ProductImportSerializer(serializers.Serializer):
                 "en": "Invalid file type. Please upload an xlsx file."
             })
         return value
-
 
 
 class CategorySerializer(serializers.ModelSerializer):

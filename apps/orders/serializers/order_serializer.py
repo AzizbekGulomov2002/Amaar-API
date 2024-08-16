@@ -111,7 +111,6 @@ class OrderSerializer(serializers.ModelSerializer):
             'phone_number': instance.user.phone_number
         } if instance.user else None
 
-        # Add order_status and payment_status to the representation
         representation['order_status'] = instance.order_status
         representation['payment_status'] = instance.payment_status
 

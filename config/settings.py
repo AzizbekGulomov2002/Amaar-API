@@ -154,7 +154,6 @@ JAZZMIN_SETTINGS = {
     "navbar": "navbar-navy navbar-dark",
 
     "show_sidebar": True,
-    "navigation_expanded": False,
     "hide_apps": [],
     "hide_models": [],
     "icons": {
