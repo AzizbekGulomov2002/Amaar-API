@@ -18,8 +18,8 @@ router.register('delivery-info', DeliveryInfoViewSet)
 router.register('policy-and-privacy', PolicyAndPrivacyViewSet)
 router.register('public-offer', PublicOfferViewSet)
 router.register('return-policy', ReturnPolicyViewSet)
-
 router.register('order-history', OrderHistoryViewSet, basename='order-history')
+
 urlpatterns = [
     path('', include(router.urls)),
     path('webhook/', stripe_webhook, name='webhook'),
@@ -29,5 +29,4 @@ urlpatterns = [
     path('dashboard/', DashboardView.as_view(), name='dashboard'),
     path('success/', payment_success, name='payment_success'),
     path('fail/', payment_fail, name='payment_fail'),
-
 ]

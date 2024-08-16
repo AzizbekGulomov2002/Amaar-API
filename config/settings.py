@@ -137,6 +137,7 @@ STATIC_ROOT = os.path.join(BASE_DIR, 'static')  # noqa
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
+
 JAZZMIN_SETTINGS = {
     "site_title": "Tashkent-Marker ERP",
     "site_header": "Tashkent-Marker ERP",

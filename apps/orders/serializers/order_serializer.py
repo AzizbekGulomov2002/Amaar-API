@@ -21,7 +21,10 @@ class OrderSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Order
-        fields = ['id', 'address', 'latitude', 'longitude', 'comment', 'products', 'user', 'created_at', 'type_order']
+        fields = [
+            'id', 'address', 'latitude', 'longitude', 'comment', 'products',
+            'user', 'created_at', 'type_order', 'order_status', 'payment_status'
+        ]
 
     def validate_products(self, products):  # noqa
         for product_data in products:
@@ -107,6 +110,10 @@ class OrderSerializer(serializers.ModelSerializer):
             'name': instance.user.name,
             'phone_number': instance.user.phone_number
         } if instance.user else None
+
+        # Add order_status and payment_status to the representation
+        representation['order_status'] = instance.order_status
+        representation['payment_status'] = instance.payment_status
 
         return representation
 
