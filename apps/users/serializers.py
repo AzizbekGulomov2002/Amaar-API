@@ -1,4 +1,5 @@
 from django.contrib.auth import authenticate
+from django.db import IntegrityError
 from rest_framework import serializers
 
 from .models import User
@@ -11,12 +12,15 @@ class RegisterSerializer(serializers.ModelSerializer):
         extra_kwargs = {'password': {'write_only': True}}
 
     def create(self, validated_data):
-        user = User.objects.create_user(
-            phone_number=validated_data['phone_number'],
-            password=validated_data['password'],
-            name=validated_data.get('name', '')
-        )
-        return user
+        try:
+            user = User.objects.create_user(
+                phone_number=validated_data['phone_number'],
+                password=validated_data['password'],
+                name=validated_data.get('name', '')
+            )
+            return user
+        except IntegrityError:
+            raise serializers.ValidationError({"phone_number": "User with this phone number already exists."})
 
 
 class LoginSerializer(serializers.Serializer):
@@ -34,6 +38,3 @@ class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
         fields = ['id', 'phone_number', 'name', 'is_active', 'is_staff', 'date_joined', 'company']
-
-
-

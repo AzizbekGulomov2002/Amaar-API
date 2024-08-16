@@ -1,35 +1,58 @@
 from rest_framework import generics
+from rest_framework import status
 from rest_framework.authtoken.models import Token
 from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
+from rest_framework.views import APIView
 from tutorial.quickstart.serializers import UserSerializer
 
 from .models import User
 from .serializers import RegisterSerializer, LoginSerializer
 
 
-class RegisterView(generics.CreateAPIView):
-    queryset = User.objects.all()
+class RegisterView(APIView):
     permission_classes = [AllowAny]
-    serializer_class = RegisterSerializer
 
-
-class LoginView(generics.GenericAPIView):
-    serializer_class = LoginSerializer
-    permission_classes = [AllowAny]
-    def post(self, request, *args, **kwargs):
-        serializer = self.get_serializer(data=request.data)
-        serializer.is_valid(raise_exception=True)
-        user = serializer.validated_data
-        token, created = Token.objects.get_or_create(user=user)
-        return Response({
-            "token": token.key,
-            "user": {
+    def post(self, request, *args, **kwargs):  # noqa
+        serializer = RegisterSerializer(data=request.data)
+        if serializer.is_valid():
+            user = serializer.save()
+            return Response({
                 "id": user.id,
                 "phone_number": user.phone_number,
-                "name": user.name,
-            }
-        })
+                "name": user.name
+            }, status=status.HTTP_201_CREATED)
+        else:
+            first_error_message = list(serializer.errors.values())[0][0]
+            return Response([{
+                "success": False,
+                "message": first_error_message
+            }], status=status.HTTP_400_BAD_REQUEST)
+
+
+class LoginView(APIView):
+    serializer_class = LoginSerializer
+    permission_classes = [AllowAny]
+
+    def post(self, request, *args, **kwargs):
+        serializer = self.serializer_class(data=request.data)
+        if serializer.is_valid():
+            user = serializer.validated_data
+            token, created = Token.objects.get_or_create(user=user)
+            return Response({
+                "token": token.key,
+                "user": {
+                    "id": user.id,
+                    "phone_number": user.phone_number,
+                    "name": user.name,
+                }
+            })
+        else:
+            first_error_message = list(serializer.errors.values())[0][0]
+            return Response([{
+                "success": False,
+                "message": first_error_message
+            }], status=status.HTTP_400_BAD_REQUEST)
 
 
 class UserListCreateAPIView(generics.ListCreateAPIView):
