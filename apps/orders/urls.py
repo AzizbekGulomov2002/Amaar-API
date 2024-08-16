@@ -5,7 +5,7 @@ from .views import payment_success, payment_fail
 from .views.infos_views import BannerViewSet, DeliveryInfoViewSet, PolicyAndPrivacyViewSet, PublicOfferViewSet, \
     ReturnPolicyViewSet, DashboardView
 from .views.order_views import OrderHistoryViewSet, OrderListAPIView
-from .views.product_views import CategoryViewSet, AllCategoryViewSet, ProductViewSet, BestProductsListView
+from .views.product_views import CategoryViewSet, AllCategoryViewSet, ProductImportView, ProductViewSet, BestProductsListView
 from .views.user_views import UserOrderHistoryAPIView
 from .views.webhook import stripe_webhook
 
@@ -29,5 +29,7 @@ urlpatterns = [
     path('dashboard/', DashboardView.as_view(), name='dashboard'),
     path('success/', payment_success, name='payment_success'),
     path('fail/', payment_fail, name='payment_fail'),
+
+    path('import-products/', ProductImportView.as_view(), name='import-products'),
 
 ]

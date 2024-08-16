@@ -1,6 +1,5 @@
 import time
 from datetime import datetime
-
 import stripe
 from django.urls import reverse
 from django.utils.http import urlencode
@@ -95,6 +94,20 @@ class ProductSerializer(serializers.ModelSerializer):
             'expiration_time': expiration_time,
             'session_id': session.id
         }
+
+
+
+class ProductImportSerializer(serializers.Serializer):
+    file = serializers.FileField()
+    def validate_file(self, value):
+        if not value.name.endswith('.xlsx'):
+            raise serializers.ValidationError({
+                "uz": "Fayl turi noto'g'ri. Iltimos, xlsx faylni yuklang.",
+                "ru": "Неверный тип файла. Пожалуйста, загрузите файл формата xlsx.",
+                "en": "Invalid file type. Please upload an xlsx file."
+            })
+        return value
+
 
 
 class CategorySerializer(serializers.ModelSerializer):
