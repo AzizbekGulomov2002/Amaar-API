@@ -1,3 +1,4 @@
+from drf_yasg.utils import swagger_auto_schema
 from rest_framework import generics
 from rest_framework import status
 from rest_framework.authtoken.models import Token
@@ -11,10 +12,12 @@ from .serializers import RegisterSerializer, LoginSerializer
 
 
 class RegisterView(APIView):
+    serializer_class = RegisterSerializer
     permission_classes = [AllowAny]
 
-    def post(self, request, *args, **kwargs):  # noqa
-        serializer = RegisterSerializer(data=request.data)
+    @swagger_auto_schema(request_body=RegisterSerializer)
+    def post(self, request, *args, **kwargs):
+        serializer = self.serializer_class(data=request.data)
         if serializer.is_valid():
             user = serializer.save()
             return Response({
@@ -34,6 +37,7 @@ class LoginView(APIView):
     serializer_class = LoginSerializer
     permission_classes = [AllowAny]
 
+    @swagger_auto_schema(request_body=LoginSerializer)
     def post(self, request, *args, **kwargs):
         serializer = self.serializer_class(data=request.data)
         if serializer.is_valid():
@@ -44,7 +48,7 @@ class LoginView(APIView):
                 "user": {
                     "id": user.id,
                     "phone_number": user.phone_number,
-                    "name": user.name,
+                    "name": user.name
                 }
             })
         else:

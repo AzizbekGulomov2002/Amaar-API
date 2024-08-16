@@ -28,9 +28,16 @@ class LoginSerializer(serializers.Serializer):
     password = serializers.CharField(write_only=True)
 
     def validate(self, data):
-        user = authenticate(phone_number=data['phone_number'], password=data['password'])
+        phone_number = data['phone_number']
+        password = data['password']
+
+        if not User.objects.filter(phone_number=phone_number).exists():
+            raise serializers.ValidationError("Invalid phone number, this user does not exist")
+
+        user = authenticate(phone_number=phone_number, password=password)
         if user and user.is_active:
             return user
+
         raise serializers.ValidationError("Invalid credentials")
 
 
