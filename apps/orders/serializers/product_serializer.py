@@ -14,21 +14,17 @@ class ProductImageSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = ProductImage
-        fields = ['id', 'product', 'image', 'image_url']
-        extra_kwargs = {
-            'product': {'write_only': True},
-            'image': {'write_only': True},
-        }
+        fields = ['id', 'image_url']
 
     def get_image_url(self, obj):
         request = self.context.get('request')
         if obj.image and hasattr(obj.image, 'url'):
-            return request.build_absolute_uri(obj.image.url)
+            return request.build_absolute_uri(obj.image.url) if request else obj.image.url
         return None
 
 
 class ProductSerializer(serializers.ModelSerializer):
-    images = ProductImageSerializer(many=True, read_only=True)
+    images = ProductImageSerializer(many=True, read_only=True, source='product_images')
     uploaded_images = serializers.ListField(
         child=serializers.ImageField(max_length=100000, allow_empty_file=False, use_url=False),
         write_only=True,
