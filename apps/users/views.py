@@ -10,12 +10,13 @@ from .serializers import RegisterSerializer, LoginSerializer
 
 class RegisterView(generics.CreateAPIView):
     queryset = User.objects.all()
+    permission_classes = [AllowAny]
     serializer_class = RegisterSerializer
 
 
 class LoginView(generics.GenericAPIView):
     serializer_class = LoginSerializer
-
+    permission_classes = [AllowAny]
     def post(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)

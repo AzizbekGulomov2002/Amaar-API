@@ -29,6 +29,7 @@ class ProductViewSet(viewsets.ModelViewSet):
 
 class BestProductsListView(generics.ListAPIView):
     queryset = Product.objects.filter(best_deals=True)
+    permission_classes = [IsAuthenticatedOrReadOnly]
     serializer_class = ProductSerializer
 
 

@@ -12,11 +12,13 @@ class SpecialOfferViewSet(viewsets.ModelViewSet):
 
 class CompanyViewSet(viewsets.ModelViewSet):
     queryset = Company.objects.all()
+    permission_classes = [AllowAny]
     serializer_class = CompanySerializer
 
 
 class SocialNetworksViewSet(viewsets.ModelViewSet):
     queryset = SocialNetworks.objects.all()
+    permission_classes = [AllowAny]
     serializer_class = SocialNetworksSerializer
 
 
