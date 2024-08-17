@@ -1,5 +1,5 @@
 from django.core.exceptions import ValidationError
-from django.db import models
+from django.db import models, transaction
 
 from apps.orders.models.products import Product
 from apps.users.models import User
@@ -43,6 +43,7 @@ class Order(models.Model):
 
     def save(self, *args, **kwargs):
         from apps.orders.models.payment import Payment
+        is_new = self.pk is None
 
         if self.type_order == 'cash':
             if self.order_status == 'delivered':
@@ -54,6 +55,10 @@ class Order(models.Model):
                 for item in self.products.all():
                     item.restore_product_quantity()
         super().save(*args, **kwargs)
+
+        if is_new:
+            from apps.orders.tasks import send_order_to_telegram_task
+            transaction.on_commit(lambda: send_order_to_telegram_task.delay(self.id))
 
 
 class OrderItem(models.Model):

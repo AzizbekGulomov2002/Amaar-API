@@ -1,11 +1,11 @@
-from django_filters.rest_framework import DjangoFilterBackend
-from rest_framework import viewsets, generics, filters
-from rest_framework.permissions import AllowAny, IsAuthenticated, IsAuthenticatedOrReadOnly
-from rest_framework.response import Response
 from django.db import transaction
+from django_filters.rest_framework import DjangoFilterBackend
 from openpyxl import load_workbook
-from rest_framework.views import APIView
 from rest_framework import status
+from rest_framework import viewsets, generics, filters
+from rest_framework.permissions import AllowAny, IsAuthenticatedOrReadOnly
+from rest_framework.response import Response
+from rest_framework.views import APIView
 
 from apps.orders.filters import CategoryFilter, ProductFilter
 from apps.orders.models.products import Category, Product
@@ -32,7 +32,6 @@ class ProductViewSet(viewsets.ModelViewSet):
     search_fields = ['name_uz', 'name_ru', 'name_en', 'description_uz', 'description_ru', 'description_en']
 
 
-
 class ProductImportView(APIView):
     permission_classes = [AllowAny]
 
@@ -51,8 +50,9 @@ class ProductImportView(APIView):
                     for row in sheet.iter_rows(min_row=2, values_only=True):
                         if not row or len(row) < 10:  # Ensure all columns are present
                             continue
-                        
-                        category_name, price, quantity, name_uz, name_ru, name_en, description_uz, description_ru, description_en = row[:9]
+
+                        category_name, price, quantity, name_uz, name_ru, name_en, description_uz, description_ru, description_en = row[
+                                                                                                                                    :9]
 
                         if Product.objects.filter(name_uz=name_uz, company_id=company_id).exists():
                             return Response({
@@ -116,7 +116,6 @@ class ProductImportView(APIView):
                 "en": "Invalid data provided. Please check your input."
             }
         }, status=status.HTTP_400_BAD_REQUEST)
-
 
 
 class BestProductsListView(generics.ListAPIView):
