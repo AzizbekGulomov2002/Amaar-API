@@ -59,3 +59,9 @@ class RecallSerializer(serializers.ModelSerializer):
             'name': instance.client.name
         }
         return representation
+
+
+class AboutUsSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = AboutUs
+        fields = ["id", "title_uz", 'title_ru', 'title_en', ]

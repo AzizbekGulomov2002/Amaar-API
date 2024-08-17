@@ -32,3 +32,9 @@ class RecallViewSet(viewsets.ModelViewSet):
     queryset = Recall.objects.all()
     serializer_class = RecallSerializer
     permission_classes = [AllowAny]
+
+
+class AboutUsViewSet(viewsets.ModelViewSet):
+    queryset = AboutUs.objects.all()
+    serializer_class = AboutUsSerializer
+    permission_classes = [AllowAny]

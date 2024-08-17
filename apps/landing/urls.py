@@ -9,6 +9,7 @@ router.register('news', NewsViewSet)
 router.register('companies', CompanyViewSet)
 router.register('social-networks', SocialNetworksViewSet)
 router.register('recalls', RecallViewSet)
+router.register('aboutus', AboutUsViewSet)
 
 urlpatterns = [
     path('', include(router.urls)),

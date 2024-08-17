@@ -13,6 +13,11 @@ class CompanyAdmin(admin.ModelAdmin):
     ...
 
 
+@admin.register(AboutUs)
+class AboutUsAdmin(admin.ModelAdmin):
+    ...
+
+
 @admin.register(SocialNetworks)
 class SocialNetworksAdmin(admin.ModelAdmin):
     ...
