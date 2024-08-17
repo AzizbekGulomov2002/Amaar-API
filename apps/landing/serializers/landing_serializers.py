@@ -41,8 +41,8 @@ class NewsSerializer(serializers.ModelSerializer):
     def to_representation(self, instance):
         representation = super().to_representation(instance)
         representation['company'] = {
-            'title': instance.company.title,
-            'url': instance.company.url
+            'title': instance.company.name,
+            'url': instance.company.mail
         }
         return representation
 
