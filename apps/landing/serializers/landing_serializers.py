@@ -16,7 +16,7 @@ class SpecialOfferSerializer(serializers.ModelSerializer):
             'name_ru': instance.product.name_ru,
             'name_en': instance.product.name_en,
             'price': instance.product.price,
-            'amount': instance.product.amount,
+            'quantity': instance.product.quantity,
         }
         return representation
 
