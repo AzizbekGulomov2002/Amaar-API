@@ -18,7 +18,7 @@ class TranslatableModel(models.Model):
 
 class Category(models.Model):
     name_uz = models.CharField(max_length=255, null=True, blank=True)
-    image = models.ImageField(upload_to='category_images/')
+    image = models.ImageField(upload_to='category_images/', null=True, blank=True)
     name_ru = models.CharField(max_length=255, null=True, blank=True)
     name_en = models.CharField(max_length=255, null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
@@ -61,7 +61,7 @@ class Product(TranslatableModel):
 
 class ProductImage(models.Model):
     product = models.ForeignKey(Product, related_name='product_images', on_delete=models.CASCADE)
-    image = models.ImageField(upload_to='product_images/')
+    image = models.ImageField(upload_to='product_images/',null=True, blank=True)
 
     def __str__(self):
         return f"Image for {self.product.name_uz}"
