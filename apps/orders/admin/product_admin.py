@@ -20,7 +20,7 @@ class CategoryAdmin(admin.ModelAdmin):
 @admin.register(Product)
 class ProductAdmin(admin.ModelAdmin):
     inlines = [ProductImageInline]
-    list_display = ('id', 'name_uz', 'price', 'quantity', 'category', 'best_deals', 'view_button')
+    list_display = ('id', 'name_uz', 'price', 'quantity', 'category_uz','category_ru', 'best_deals', 'view_button')
     search_fields = ('name_uz', 'name_ru', 'name_en')
     ordering = ('-created_at',)
     add_form_template = 'admin/orders/add_btn.html'
