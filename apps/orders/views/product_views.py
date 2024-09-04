@@ -36,7 +36,6 @@ class ProductImportView(APIView):
     permission_classes = [AllowAny]
 
     def post(self, request, *args, **kwargs):
-        company_id = request.user.company_id
         serializer = ProductImportSerializer(data=request.data)
 
         if serializer.is_valid():
@@ -54,7 +53,8 @@ class ProductImportView(APIView):
                         category_name, price, quantity, name_uz, name_ru, name_en, description_uz, description_ru, description_en = row[
                                                                                                                                     :9]
 
-                        if Product.objects.filter(name_uz=name_uz, company_id=company_id).exists():
+                        # Check if product already exists
+                        if Product.objects.filter(name_uz=name_uz).exists():
                             return Response({
                                 "error": {
                                     "uz": f"'{name_uz}' nomli mahsulot allaqachon mavjud",
@@ -64,7 +64,7 @@ class ProductImportView(APIView):
                             }, status=status.HTTP_400_BAD_REQUEST)
 
                         # Check if category exists
-                        category = Category.objects.filter(name=category_name, company_id=company_id).first()
+                        category = Category.objects.filter(name=category_name).first()
                         if not category:
                             return Response({
                                 "error": {
@@ -76,7 +76,6 @@ class ProductImportView(APIView):
 
                         # Create product
                         product = Product.objects.create(
-                            company_id=company_id,
                             category=category,
                             price=price,
                             quantity=quantity,
@@ -116,7 +115,7 @@ class ProductImportView(APIView):
                 "en": "Invalid data provided. Please check your input."
             }
         }, status=status.HTTP_400_BAD_REQUEST)
-
+        
 
 class BestProductsListView(generics.ListAPIView):
     queryset = Product.objects.filter(best_deals=True)
