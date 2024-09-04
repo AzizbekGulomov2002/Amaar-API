@@ -34,7 +34,8 @@ class Category(models.Model):
 class Product(TranslatableModel):
     price = models.DecimalField(max_digits=10, decimal_places=2)
     quantity = models.PositiveIntegerField()
-    category = models.ForeignKey(Category, on_delete=models.CASCADE)
+    category_uz = models.ForeignKey(Category, on_delete=models.CASCADE)
+    category_ru = models.ForeignKey(Category, on_delete=models.CASCADE)
     best_deals = models.BooleanField(default=False)
     created_at = models.DateTimeField(auto_now_add=True)
 

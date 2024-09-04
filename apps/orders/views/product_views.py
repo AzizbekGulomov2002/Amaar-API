@@ -32,6 +32,7 @@ class ProductViewSet(viewsets.ModelViewSet):
     search_fields = ['name_uz', 'name_ru', 'name_en', 'description_uz', 'description_ru', 'description_en']
 
 
+
 class ProductImportView(APIView):
     permission_classes = [AllowAny]
 
@@ -50,8 +51,7 @@ class ProductImportView(APIView):
                         if not row or len(row) < 10:  # Ensure all columns are present
                             continue
 
-                        category_name, price, quantity, name_uz, name_ru, name_en, description_uz, description_ru, description_en = row[
-                                                                                                                                    :9]
+                        category_uz, category_ru, price, quantity, name_uz, name_ru, name_en, description_uz, description_ru, description_en = row[:10]
 
                         # Check if product already exists
                         if Product.objects.filter(name_uz=name_uz).exists():
@@ -64,13 +64,13 @@ class ProductImportView(APIView):
                             }, status=status.HTTP_400_BAD_REQUEST)
 
                         # Check if category exists
-                        category = Category.objects.filter(name=category_name).first()
+                        category = Category.objects.filter(name_uz=category_uz).first()
                         if not category:
                             return Response({
                                 "error": {
-                                    "uz": f"Kategoriya '{category_name}' mavjud emas",
-                                    "ru": f"Категория '{category_name}' не существует",
-                                    "en": f"Category '{category_name}' does not exist"
+                                    "uz": f"Kategoriya '{category_uz}' mavjud emas",
+                                    "ru": f"Категория '{category_uz}' не существует",
+                                    "en": f"Category '{category_uz}' does not exist"
                                 }
                             }, status=status.HTTP_400_BAD_REQUEST)
 
@@ -115,7 +115,7 @@ class ProductImportView(APIView):
                 "en": "Invalid data provided. Please check your input."
             }
         }, status=status.HTTP_400_BAD_REQUEST)
-        
+
 
 class BestProductsListView(generics.ListAPIView):
     queryset = Product.objects.filter(best_deals=True)
