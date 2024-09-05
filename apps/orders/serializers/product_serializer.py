@@ -94,17 +94,58 @@ class ProductSerializer(serializers.ModelSerializer):
         }
 
 
-class ProductImportSerializer(serializers.Serializer):
-    file = serializers.FileField()
+# class ProductImportSerializer(serializers.Serializer):
+#     file = serializers.FileField()
 
-    def validate_file(self, value):
-        if not value.name.endswith('.xlsx'):
-            raise serializers.ValidationError({
-                "uz": "Fayl turi noto'g'ri. Iltimos, xlsx faylni yuklang.",
-                "ru": "Неверный тип файла. Пожалуйста, загрузите файл формата xlsx.",
-                "en": "Invalid file type. Please upload an xlsx file."
-            })
-        return value
+#     def validate_file(self, value):
+#         if not value.name.endswith('.xlsx'):
+#             raise serializers.ValidationError({
+#                 "uz": "Fayl turi noto'g'ri. Iltimos, xlsx faylni yuklang.",
+#                 "ru": "Неверный тип файла. Пожалуйста, загрузите файл формата xlsx.",
+#                 "en": "Invalid file type. Please upload an xlsx file."
+#             })
+#         return value
+
+
+
+class ProductImportSerializer(serializers.ModelSerializer):
+    category_uz = serializers.CharField(max_length=255, allow_blank=True, required=False, allow_null=True)
+    category_ru = serializers.CharField(max_length=255, allow_blank=True, required=False, allow_null=True)
+    category_en = serializers.CharField(max_length=255, allow_blank=True, required=False, allow_null=True)
+    price = serializers.DecimalField(max_digits=10, decimal_places=2, required=False, allow_null=True)
+
+    class Meta:
+        model = Product
+        fields = ['name_uz', 'name_ru', 'name_en', 'price', 'quantity', 'category_uz', 'category_ru', 'category_en', 'best_deals']
+
+    def create(self, validated_data):
+        # Extract category names
+        category_uz_name = validated_data.pop('category_uz', None)
+        category_ru_name = validated_data.pop('category_ru', None)
+        category_en_name = validated_data.pop('category_en', None)
+
+        # Fetch or create the related categories
+        category_uz = None
+        if category_uz_name:
+            category_uz, _ = Category.objects.get_or_create(name_uz=category_uz_name)
+        
+        category_ru = None
+        if category_ru_name:
+            category_ru, _ = Category.objects.get_or_create(name_ru=category_ru_name)
+        
+        category_en = None
+        if category_en_name:
+            category_en, _ = Category.objects.get_or_create(name_en=category_en_name)
+
+        # Create the product with the fetched or created categories
+        product = Product.objects.create(
+            **validated_data,
+            category_uz=category_uz,
+            category_ru=category_ru,
+            category_en=category_en,  # Include category_en here
+        )
+
+        return product
 
 
 class CategorySerializer(serializers.ModelSerializer):

@@ -28,93 +28,63 @@ class ProductViewSet(viewsets.ModelViewSet):
     filterset_class = ProductFilter
     queryset = Product.objects.all().order_by('-id')
     serializer_class = ProductSerializer
-    permission_classes = [IsAuthenticatedOrReadOnly]
+    permission_classes = [AllowAny]
     search_fields = ['name_uz', 'name_ru', 'name_en', 'description_uz', 'description_ru', 'description_en']
-
 
 
 class ProductImportView(APIView):
     permission_classes = [AllowAny]
-
     def post(self, request, *args, **kwargs):
-        serializer = ProductImportSerializer(data=request.data)
+        file = request.FILES.get('file')
 
-        if serializer.is_valid():
-            file = serializer.validated_data['file']
-            try:
-                workbook = load_workbook(filename=file, read_only=True)
-                sheet = workbook.active
-                imported_products = []
+        if not file or not file.name.endswith('.xlsx'):
+            return Response({'error': 'Please upload a valid Excel file (.xlsx)'}, status=status.HTTP_400_BAD_REQUEST)
 
-                with transaction.atomic():
-                    for row in sheet.iter_rows(min_row=2, values_only=True):
-                        if not row or len(row) < 10:  # Ensure all columns are present
-                            continue
+        try:
+            wb = load_workbook(file, data_only=True)
+            ws = wb.active
+        except Exception as e:
+            return Response({'error': 'Failed to process the Excel file.'}, status=status.HTTP_400_BAD_REQUEST)
 
-                        category_uz, category_ru, price, quantity, name_uz, name_ru, name_en, description_uz, description_ru, description_en = row[:10]
+        products = []
+        errors = []
+        
+        for idx, row in enumerate(ws.iter_rows(min_row=2, values_only=True), start=2):
+            name_uz = row[0]
+            name_ru = row[1]
+            name_en = row[2]
+            price = row[3]
+            quantity = row[4]
+            category_uz = row[5]
+            category_ru = row[6]
+            category_en = row[7]
+            best_deals = row[8]
 
-                        # Check if product already exists
-                        if Product.objects.filter(name_uz=name_uz).exists():
-                            return Response({
-                                "error": {
-                                    "uz": f"'{name_uz}' nomli mahsulot allaqachon mavjud",
-                                    "ru": f"Продукт с названием '{name_uz}' уже существует",
-                                    "en": f"Product named '{name_uz}' already exists"
-                                }
-                            }, status=status.HTTP_400_BAD_REQUEST)
-
-                        # Check if category exists
-                        category = Category.objects.filter(name_uz=category_uz).first()
-                        if not category:
-                            return Response({
-                                "error": {
-                                    "uz": f"Kategoriya '{category_uz}' mavjud emas",
-                                    "ru": f"Категория '{category_uz}' не существует",
-                                    "en": f"Category '{category_uz}' does not exist"
-                                }
-                            }, status=status.HTTP_400_BAD_REQUEST)
-
-                        # Create product
-                        product = Product.objects.create(
-                            category=category,
-                            price=price,
-                            quantity=quantity,
-                            name_uz=name_uz,
-                            name_ru=name_ru,
-                            name_en=name_en,
-                            description_uz=description_uz,
-                            description_ru=description_ru,
-                            description_en=description_en,
-                        )
-
-                        imported_products.append(ProductSerializer(product).data)
-
-                return Response({
-                    "success": {
-                        "uz": "Mahsulotlar muvaffaqiyatli import qilindi",
-                        "ru": "Продукты успешно импортированы",
-                        "en": "Products were successfully imported"
-                    },
-                    "products": imported_products
-                }, status=status.HTTP_201_CREATED)
-
-            except Exception as e:
-                return Response({
-                    "error": {
-                        "uz": f"Xatolik yuz berdi: {str(e)}",
-                        "ru": f"Произошла ошибка: {str(e)}",
-                        "en": f"An error occurred: {str(e)}"
-                    }
-                }, status=status.HTTP_400_BAD_REQUEST)
-
-        return Response({
-            "errors": serializer.errors,
-            "message": {
-                "uz": "Noto'g'ri ma'lumotlar kiritildi. Iltimos, kiritgan ma'lumotlaringizni tekshiring.",
-                "ru": "Предоставлены неверные данные. Пожалуйста, проверьте ваш ввод.",
-                "en": "Invalid data provided. Please check your input."
+            product_data = {
+                'name_uz': name_uz,
+                'name_ru': name_ru,
+                'name_en': name_en,
+                'price': price,
+                'quantity': quantity,
+                'category_uz': category_uz,
+                'category_ru': category_ru,
+                'category_en': category_en,
+                'best_deals': bool(best_deals),
             }
-        }, status=status.HTTP_400_BAD_REQUEST)
+
+            serializer = ProductImportSerializer(data=product_data)
+            if serializer.is_valid():
+                serializer.save()
+                products.append(serializer.data)
+            else:
+                errors.append({'row': idx, 'errors': serializer.errors})
+
+        if errors:
+            return Response({'error': 'Some rows had errors', 'details': errors}, status=status.HTTP_400_BAD_REQUEST)
+
+        return Response({'message': 'Products imported successfully', 'products': products}, status=status.HTTP_201_CREATED)
+
+
 
 
 class BestProductsListView(generics.ListAPIView):

@@ -1,5 +1,4 @@
 import django_filters
-
 from apps.orders.models.products import Category, Product
 
 

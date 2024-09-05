@@ -15,7 +15,6 @@ class TranslatableModel(models.Model):
     def __str__(self):
         return self.name_uz[:50]
 
-
 class Category(models.Model):
     name_uz = models.CharField(max_length=255, null=True, blank=True)
     image = models.ImageField(upload_to='category_images/', null=True, blank=True)
@@ -32,8 +31,8 @@ class Category(models.Model):
 
 
 class Product(TranslatableModel):
-    price = models.DecimalField(max_digits=10, decimal_places=2)
-    quantity = models.PositiveIntegerField()
+    price = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True)
+    quantity = models.PositiveIntegerField(null=True, blank=True)
     category_uz = models.ForeignKey(
         Category, 
         on_delete=models.CASCADE, 
@@ -48,11 +47,18 @@ class Product(TranslatableModel):
         null=True, 
         blank=True
     )
+    category_en = models.ForeignKey(  # Add this field
+        Category, 
+        on_delete=models.CASCADE, 
+        related_name='products_en',
+        null=True, 
+        blank=True
+    )
     best_deals = models.BooleanField(default=False)
     created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
-        return self.name_uz or self.name_ru or self.name_en
+        return "Salom"
 
     class Meta:
         ordering = ['name_uz', 'name_ru', 'name_en']
