@@ -5,7 +5,7 @@ from .views import payment_success, payment_fail
 from .views.infos_views import BannerViewSet, DeliveryInfoViewSet, PolicyAndPrivacyViewSet, PublicOfferViewSet, \
     ReturnPolicyViewSet, DashboardView
 from .views.order_views import OrderHistoryViewSet, OrderListAPIView
-from .views.product_views import CategoryViewSet, AllCategoryViewSet, ProductImportView, ProductViewSet, BestProductsListView
+from .views.product_views import CategoryViewSet, AllCategoryViewSet, ProductImportView, ProductViewSet, BestProductsListView,CategoryImportView
 from .views.user_views import UserOrderHistoryAPIView
 from .views.webhook import stripe_webhook
 
@@ -30,5 +30,6 @@ urlpatterns = [
     path('success/', payment_success, name='payment_success'),
     path('fail/', payment_fail, name='payment_fail'),
     path('import-products/', ProductImportView.as_view(), name='import-products'),
+    path('import-categories/', CategoryImportView.as_view(), name='import-categories'),
 
 ]

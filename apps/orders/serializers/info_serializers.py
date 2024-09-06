@@ -6,7 +6,7 @@ from apps.orders.models.infos import Banner, DeliveryInfo, PolicyAndPrivacy, Pub
 class BannerSerializer(serializers.ModelSerializer):
     class Meta:
         model = Banner
-        fields = ['id', 'color', 'description_uz', 'description_ru', 'description_en', 'image', 'product']
+        fields = "__all__"
 
 
 class DashboardSerializer(serializers.Serializer):

@@ -3,10 +3,7 @@ from django.contrib import admin
 from apps.orders.models.infos import DeliveryInfo, PolicyAndPrivacy, PublicOffer, ReturnPolicy, Banner
 
 
-@admin.register(Banner)
-class BannerAdmin(admin.ModelAdmin):
-    list_display = ('color', 'product')
-    search_fields = ('color', 'product__name_uz')
+admin.site.register(Banner)
 
 
 @admin.register(DeliveryInfo)

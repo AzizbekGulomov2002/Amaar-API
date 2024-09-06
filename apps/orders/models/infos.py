@@ -17,20 +17,20 @@ class TranslatableModel(models.Model):
 
 
 class Banner(models.Model):
-    color = models.CharField(max_length=255)
+    # color = models.CharField(max_length=255)  
+    title_uz = models.TextField(null=True, blank=True)
+    title_ru = models.TextField(null=True, blank=True)
+    title_en = models.TextField(null=True, blank=True)
+    
     description_uz = models.TextField(null=True, blank=True)
     description_ru = models.TextField(null=True, blank=True)
     description_en = models.TextField(null=True, blank=True)
-    image = models.ImageField(upload_to='banners/')
-    product = models.ForeignKey(Product, on_delete=models.CASCADE)
+    image = models.ImageField(upload_to='banners/', null=True, blank=True)
+    # product = models.ForeignKey(Product, on_delete=models.CASCADE)
 
     def __str__(self):
-        return f"Banner {self.id} - {self.color}"
+        return f"Banner {self.id}"
 
-    class Meta:
-        ordering = ['color']
-        verbose_name = 'Banner'
-        verbose_name_plural = 'Banners'
 
 
 class DeliveryInfo(TranslatableModel):

@@ -1,5 +1,6 @@
 import time
 from datetime import datetime
+import openpyxl
 
 import stripe
 from django.urls import reverse
@@ -34,7 +35,7 @@ class ProductSerializer(serializers.ModelSerializer):
     class Meta:
         model = Product
         fields = ['id', 'name_uz', 'name_ru', 'name_en', 'description_uz', 'description_ru', 'description_en', 'price',
-                  'category_uz','category_ru', 'images', 'best_deals', 'quantity', 'created_at', 'uploaded_images']
+                  'category_uz','category_ru', 'images', 'best_deals', 'quantity', 'created_at', 'uploaded_images','show_main_page']
 
     def create(self, validated_data):
         uploaded_images = validated_data.pop('uploaded_images', [])
@@ -93,60 +94,82 @@ class ProductSerializer(serializers.ModelSerializer):
             'session_id': session.id
         }
 
+# class ProductImportSerializer(serializers.ModelSerializer):
+#     category_uz = serializers.CharField(max_length=255, allow_blank=True, required=False, allow_null=True)
+#     category_ru = serializers.CharField(max_length=255, allow_blank=True, required=False, allow_null=True)
+#     category_en = serializers.CharField(max_length=255, allow_blank=True, required=False, allow_null=True)
+#     price = serializers.DecimalField(max_digits=10, decimal_places=2, required=False, allow_null=True)
+#     description_uz = serializers.CharField(max_length=255, allow_blank=True, required=False, allow_null=True)
+#     description_ru = serializers.CharField(max_length=255, allow_blank=True, required=False, allow_null=True)
+#     description_en = serializers.CharField(max_length=255, allow_blank=True, required=False, allow_null=True)
 
-# class ProductImportSerializer(serializers.Serializer):
-#     file = serializers.FileField()
+#     class Meta:
+#         model = Product
+#         fields = ['name_uz', 'name_ru', 'name_en', 'price', 'quantity', 'category_uz', 'category_ru', 'category_en', 'best_deals', 'description_uz', 'description_ru', 'description_en']
 
-#     def validate_file(self, value):
-#         if not value.name.endswith('.xlsx'):
-#             raise serializers.ValidationError({
-#                 "uz": "Fayl turi noto'g'ri. Iltimos, xlsx faylni yuklang.",
-#                 "ru": "Неверный тип файла. Пожалуйста, загрузите файл формата xlsx.",
-#                 "en": "Invalid file type. Please upload an xlsx file."
-#             })
-#         return value
+#     def create(self, validated_data):
+#         # Extract category names
+#         category_uz_name = validated_data.pop('category_uz', None)
+#         category_ru_name = validated_data.pop('category_ru', None)
+#         category_en_name = validated_data.pop('category_en', None)
 
-
-
-class ProductImportSerializer(serializers.ModelSerializer):
-    category_uz = serializers.CharField(max_length=255, allow_blank=True, required=False, allow_null=True)
-    category_ru = serializers.CharField(max_length=255, allow_blank=True, required=False, allow_null=True)
-    category_en = serializers.CharField(max_length=255, allow_blank=True, required=False, allow_null=True)
-    price = serializers.DecimalField(max_digits=10, decimal_places=2, required=False, allow_null=True)
-
-    class Meta:
-        model = Product
-        fields = ['name_uz', 'name_ru', 'name_en', 'price', 'quantity', 'category_uz', 'category_ru', 'category_en', 'best_deals']
-
-    def create(self, validated_data):
-        # Extract category names
-        category_uz_name = validated_data.pop('category_uz', None)
-        category_ru_name = validated_data.pop('category_ru', None)
-        category_en_name = validated_data.pop('category_en', None)
-
-        # Fetch or create the related categories
-        category_uz = None
-        if category_uz_name:
-            category_uz, _ = Category.objects.get_or_create(name_uz=category_uz_name)
+#         # Fetch or create the related categories
+#         category_uz = None
+#         if category_uz_name:
+#             category_uz, _ = Category.objects.get_or_create(name_uz=category_uz_name)
         
-        category_ru = None
-        if category_ru_name:
-            category_ru, _ = Category.objects.get_or_create(name_ru=category_ru_name)
+#         category_ru = None
+#         if category_ru_name:
+#             category_ru, _ = Category.objects.get_or_create(name_ru=category_ru_name)
         
-        category_en = None
-        if category_en_name:
-            category_en, _ = Category.objects.get_or_create(name_en=category_en_name)
+#         category_en = None
+#         if category_en_name:
+#             category_en, _ = Category.objects.get_or_create(name_en=category_en_name)
 
-        # Create the product with the fetched or created categories
-        product = Product.objects.create(
-            **validated_data,
-            category_uz=category_uz,
-            category_ru=category_ru,
-            category_en=category_en,  # Include category_en here
-        )
+#         # Create the product with the fetched or created categories
+#         product = Product.objects.create(
+#             **validated_data,
+#             category_uz=category_uz,
+#             category_ru=category_ru,
+#             category_en=category_en,  # Include category_en here
+#         )
 
-        return product
+#         return product
 
+
+
+class ProductImportSerializer(serializers.Serializer):
+    file = serializers.FileField()
+
+    def validate_file(self, value):
+        if not value.name.endswith('.xlsx'):
+            raise serializers.ValidationError('The file must be an Excel (.xlsx) file.')
+        return value
+
+    def create_products_from_file(self, file):
+        wb = openpyxl.load_workbook(file)
+        sheet = wb.active
+
+        for row in sheet.iter_rows(min_row=2, values_only=True):
+            name_uz, name_ru, name_en, description_uz, description_ru, description_en, price, quantity, category_uz, category_ru, category_en, best_deals, show_main_page = row
+
+            product_data = {
+                'name_uz': name_uz,
+                'name_ru': name_ru,
+                'name_en': name_en,
+                'description_uz': description_uz,
+                'description_ru': description_ru,
+                'description_en': description_en,
+                'price': price,
+                'quantity': quantity,
+                'category_uz': category_uz,
+                'category_ru': category_ru,
+                'category_en': category_en,
+                'best_deals': best_deals,
+                'show_main_page': show_main_page
+            }
+
+            Product.objects.create(**product_data)
 
 class CategorySerializer(serializers.ModelSerializer):
     products = ProductSerializer(many=True, read_only=True, source='product_set')
@@ -154,6 +177,36 @@ class CategorySerializer(serializers.ModelSerializer):
     class Meta:
         model = Category
         fields = ['id', "name_uz", 'name_ru', 'name_en', 'image', 'products']
+
+
+class CategoryImportSerializer(serializers.Serializer):
+    file = serializers.FileField()
+
+    def validate_file(self, value):
+        if not value.name.endswith('.xlsx'):
+            raise serializers.ValidationError('The file must be an Excel (.xlsx) file.')
+        return value
+
+    def create_categories_from_file(self, file):
+        wb = openpyxl.load_workbook(file)
+        sheet = wb.active
+
+        for row in sheet.iter_rows(min_row=2, values_only=True):
+            name_uz, name_ru, name_en, image, created_at = row
+
+            category_data = {
+                'name_uz': name_uz,
+                'name_ru': name_ru,
+                'name_en': name_en,
+                'created_at': created_at
+            }
+
+            # Handle image field separately if needed
+            if image:
+                # Assuming image is a file path or URL, adjust according to your needs
+                category_data['image'] = image
+
+            Category.objects.create(**category_data)
 
 
 class OnlyCategorySerializer(serializers.ModelSerializer):

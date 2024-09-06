@@ -3,7 +3,7 @@ from datetime import date, timedelta, datetime
 from django.db.models import Count
 from django.utils.timezone import now
 from rest_framework import viewsets
-from rest_framework.permissions import IsAuthenticated, IsAuthenticatedOrReadOnly
+from rest_framework.permissions import IsAuthenticated, IsAuthenticatedOrReadOnly,AllowAny
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
@@ -34,8 +34,8 @@ class ReturnPolicyViewSet(viewsets.ModelViewSet):
 
 
 class BannerViewSet(viewsets.ModelViewSet):
+    permission_classes = [AllowAny]
     queryset = Banner.objects.all().order_by('-id')
-    permission_classes = [IsAuthenticatedOrReadOnly]
     serializer_class = BannerSerializer
 
 

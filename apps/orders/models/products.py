@@ -57,6 +57,8 @@ class Product(TranslatableModel):
     best_deals = models.BooleanField(default=False)
     created_at = models.DateTimeField(auto_now_add=True)
 
+    show_main_page = models.BooleanField(default=False, null=True, blank=True)
+
     def __str__(self):
         return "Salom"
 
