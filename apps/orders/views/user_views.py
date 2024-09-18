@@ -1,5 +1,5 @@
 from rest_framework import generics
-from rest_framework.permissions import AllowAny
+from rest_framework.permissions import AllowAny,IsAuthenticated
 from rest_framework.response import Response
 
 from apps.orders.models.orders import Order
@@ -7,7 +7,7 @@ from apps.orders.serializers.order_serializer import OrderSerializer
 
 
 class UserOrderHistoryAPIView(generics.ListAPIView):
-    permission_classes = [AllowAny]
+    permission_classes = [IsAuthenticated]
     serializer_class = OrderSerializer
 
     def get_queryset(self):

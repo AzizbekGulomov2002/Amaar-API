@@ -14,7 +14,6 @@ class OrderItemSerializer(serializers.ModelSerializer):
         model = OrderItem
         fields = ['id', 'product', 'quantity']
 
-
 class OrderSerializer(serializers.ModelSerializer):
     products = OrderItemSerializer(many=True)
     user = serializers.PrimaryKeyRelatedField(queryset=User.objects.all())
@@ -116,7 +115,6 @@ class OrderSerializer(serializers.ModelSerializer):
 
         return representation
 
-
 class OrderHistoryIDSerializer(serializers.ModelSerializer):
     class Meta:
         model = OrderHistory
@@ -127,7 +125,6 @@ class OrderHistoryIDSerializer(serializers.ModelSerializer):
         representation['user'] = UserSerializer(instance.user).data
         representation['order'] = OrderSerializer(instance.order).data
         return representation
-
 
 class OrderHistoryBaseSerializers(serializers.ModelSerializer):
     class Meta:

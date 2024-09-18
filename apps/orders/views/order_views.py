@@ -4,13 +4,14 @@ from rest_framework.decorators import action
 from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
 from rest_framework.views import APIView
-
+from rest_framework.permissions import IsAuthenticated
 from apps.orders.models.orders import OrderHistory, Order
 from apps.orders.serializers.order_serializer import OrderHistoryIDSerializer, OrderHistoryBaseSerializers, \
     OrderSerializer
 
 
 class OrderHistoryViewSet(viewsets.ModelViewSet):
+    permission_classes = [IsAuthenticated]
     queryset = OrderHistory.objects.all()
 
     def get_serializer_class(self):
@@ -30,10 +31,9 @@ class OrderHistoryViewSet(viewsets.ModelViewSet):
         serializer = OrderHistoryBaseSerializers(order_histories, many=True)
         return Response(serializer.data)
 
-
 class OrderListAPIView(generics.ListCreateAPIView):
     serializer_class = OrderSerializer
-    permission_classes = [AllowAny]
+    permission_classes = [IsAuthenticated]
 
     def get_queryset(self):
         queryset = Order.objects.all().order_by('-id')
@@ -49,8 +49,8 @@ class OrderListAPIView(generics.ListCreateAPIView):
 
         return Response(order_data, status=status.HTTP_201_CREATED)
 
-
 class UpdateDeliveryStatusView(APIView):
+    permission_classes = [IsAuthenticated]
     def post(self, request, *args, **kwargs):
         order_id = request.data.get('order_id')
         delivery_status = request.data.get('delivery_status')

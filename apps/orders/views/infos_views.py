@@ -1,12 +1,10 @@
 from datetime import date, timedelta, datetime
-
 from django.db.models import Count
 from django.utils.timezone import now
 from rest_framework import viewsets
-from rest_framework.permissions import IsAuthenticated, IsAuthenticatedOrReadOnly,AllowAny
+from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
-
 from apps.orders.models.infos import PolicyAndPrivacy, PublicOffer, ReturnPolicy, Banner, DeliveryInfo
 from apps.orders.models.orders import Order, Product, OrderItem
 from apps.orders.models.products import Category
@@ -17,31 +15,31 @@ from apps.users.models import User
 
 class PolicyAndPrivacyViewSet(viewsets.ModelViewSet):
     queryset = PolicyAndPrivacy.objects.all()
-    permission_classes = [IsAuthenticatedOrReadOnly]
+    permission_classes = [IsAuthenticated]
     serializer_class = PolicyAndPrivacySerializer
 
 
 class PublicOfferViewSet(viewsets.ModelViewSet):
     queryset = PublicOffer.objects.all()
-    permission_classes = [IsAuthenticatedOrReadOnly]
+    permission_classes = [IsAuthenticated]
     serializer_class = PublicOfferSerializer
 
 
 class ReturnPolicyViewSet(viewsets.ModelViewSet):
     queryset = ReturnPolicy.objects.all()
-    permission_classes = [IsAuthenticatedOrReadOnly]
+    permission_classes = [IsAuthenticated]
     serializer_class = ReturnPolicySerializer
 
 
 class BannerViewSet(viewsets.ModelViewSet):
-    permission_classes = [AllowAny]
+    permission_classes = [IsAuthenticated]
     queryset = Banner.objects.all().order_by('-id')
     serializer_class = BannerSerializer
 
 
 class DeliveryInfoViewSet(viewsets.ModelViewSet):
     queryset = DeliveryInfo.objects.all()
-    permission_classes = [IsAuthenticatedOrReadOnly]
+    permission_classes = [IsAuthenticated]
     serializer_class = DeliveryInfoSerializer
 
 
