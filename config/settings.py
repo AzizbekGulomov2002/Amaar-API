@@ -10,7 +10,7 @@ DEBUG = True
 ALLOWED_HOSTS = ["*"]
 APPEND_SLASH = False
 INSTALLED_APPS = [
-    # 'jazzmin',
+    'jazzmin',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
