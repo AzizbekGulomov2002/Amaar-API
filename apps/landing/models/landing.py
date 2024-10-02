@@ -16,6 +16,11 @@ class SpecialOffer(models.Model):
         return self.title_en
 
 
+    class Meta:
+        verbose_name = "Special offer"
+        verbose_name_plural = "Special offers"
+
+
 class Company(models.Model):
     name = models.CharField(max_length=200)
     logo = models.ImageField(upload_to='company_images/')
@@ -30,6 +35,10 @@ class Company(models.Model):
     def __str__(self):
         return self.name
 
+    class Meta:
+        verbose_name = "Company"
+        verbose_name_plural = "Company"
+
 
 class SocialNetworks(models.Model):
     company = models.ForeignKey(Company, on_delete=models.CASCADE)
@@ -38,6 +47,11 @@ class SocialNetworks(models.Model):
 
     def __str__(self):
         return self.name
+
+    
+    class Meta:
+        verbose_name = "Social network"
+        verbose_name_plural = "Social networks"
 
 
 class News(models.Model):
@@ -67,6 +81,9 @@ class Recall(models.Model):
     def __str__(self):
         return f"{self.name} - {self.client.phone_number}"
 
+    class Meta:
+        verbose_name = "Recall"
+        verbose_name_plural = "Recalls"
 
 class AboutUs(models.Model):
     title_uz = RichTextField()

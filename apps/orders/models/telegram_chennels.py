@@ -8,3 +8,7 @@ class TelegramChannel(models.Model):
 
     def __str__(self):
         return self.name + ' ' + self.group_id
+    
+    class Meta:
+        verbose_name = "Telegram channel"
+        verbose_name_plural = "Telegram channels"

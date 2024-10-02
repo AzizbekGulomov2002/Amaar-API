@@ -37,17 +37,36 @@ class DeliveryInfo(TranslatableModel):
     def __str__(self):
         return self.name_uz[:25]
 
+    class Meta:
+        verbose_name = "Delivery Information"
+        verbose_name_plural = "Delivery Informations"
+
 
 class PolicyAndPrivacy(TranslatableModel):
     def __str__(self):
         return self.name_uz[:25]
+    
+    class Meta:
+        verbose_name = "Policy and privacy"
+        verbose_name_plural = "Policy and privacy"
+
 
 
 class PublicOffer(TranslatableModel):
     def __str__(self):
         return self.name_uz[:25]
 
+    class Meta:
+        verbose_name = "Public offer"
+        verbose_name_plural = "Public offers"
+
+
 
 class ReturnPolicy(TranslatableModel):
     def __str__(self):
         return self.name_uz[:25]
+    
+    class Meta:
+        verbose_name = "Return policy"
+        verbose_name_plural = "Return policy"
+    

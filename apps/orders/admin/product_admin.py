@@ -17,20 +17,21 @@ class CategoryAdmin(admin.ModelAdmin):
     ...
 
 
-@admin.register(Product)
-class ProductAdmin(admin.ModelAdmin):
-    inlines = [ProductImageInline]
-    list_display = ('id', 'name_uz', 'price', 'quantity','category_en', 'category_ru','best_deals', 'view_button')
-    search_fields = ('name_uz', 'name_ru', 'name_en')
-    ordering = ('-created_at',)
-    add_form_template = 'admin/orders/add_btn.html'
-    change_form_template = add_form_template
+admin.site.register(Product)
+# @admin.register(Product)
+# class ProductAdmin(admin.ModelAdmin):
+#     inlines = [ProductImageInline]
+#     list_display = ('id', 'name_uz', 'price', 'quantity','category_en', 'category_ru','best_deals', 'view_button')
+#     search_fields = ('name_uz', 'name_ru', 'name_en')
+#     ordering = ('-created_at',)
+#     add_form_template = 'admin/orders/add_btn.html'
+#     change_form_template = add_form_template
 
-    @admin.display(description='View Product')
-    def view_button(self, obj):
-        url = reverse('admin:orders_product_change', args=[obj.pk])
-        return format_html(
-            '<a class="view-button" href="#" onclick="viewProduct({id}); return false;">'
-            '<i class="fas fa-eye"></i></a>',
-            id=obj.pk
-        )
+#     @admin.display(description='View Product')
+#     def view_button(self, obj):
+#         url = reverse('admin:orders_product_change', args=[obj.pk])
+#         return format_html(
+#             '<a class="view-button" href="#" onclick="viewProduct({id}); return false;">'
+#             '<i class="fas fa-eye"></i></a>',
+#             id=obj.pk
+#         )

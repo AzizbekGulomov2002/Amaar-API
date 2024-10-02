@@ -59,7 +59,7 @@ class Product(TranslatableModel):
     show_main_page = models.BooleanField(default=False, null=True, blank=True)
 
     def __str__(self):
-        return "Salom"
+        return "Product {self.name_ru}"
 
     class Meta:
         ordering = ['name_uz', 'name_ru', 'name_en']
@@ -72,3 +72,8 @@ class ProductImage(models.Model):
 
     def __str__(self):
         return f"Image for {self.product.name_uz}"
+
+    
+    class Meta:
+        verbose_name = "Product image"
+        verbose_name_plural = 'Product images'

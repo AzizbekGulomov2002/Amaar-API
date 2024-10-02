@@ -11,7 +11,7 @@ from apps.orders.serializers.order_serializer import OrderHistoryIDSerializer, O
 
 
 class OrderHistoryViewSet(viewsets.ModelViewSet):
-    permission_classes = [IsAuthenticated]
+    permission_classes = [AllowAny]
     queryset = OrderHistory.objects.all()
 
     def get_serializer_class(self):
@@ -33,7 +33,7 @@ class OrderHistoryViewSet(viewsets.ModelViewSet):
 
 class OrderListAPIView(generics.ListCreateAPIView):
     serializer_class = OrderSerializer
-    permission_classes = [IsAuthenticated]
+    permission_classes = [AllowAny]
 
     def get_queryset(self):
         queryset = Order.objects.all().order_by('-id')
