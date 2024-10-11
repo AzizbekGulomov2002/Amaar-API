@@ -12,26 +12,21 @@ class ProductImageInline(admin.TabularInline):
     show_change_link = True
 
 
-@admin.register(Category)
 class CategoryAdmin(admin.ModelAdmin):
-    ...
+    list_display = ('id','name_uz', 'name_ru', 'name_en', 'created_at')
+    search_fields = ('name_uz', 'name_ru', 'name_en')
+    ordering = ['name_ru', 'name_en']
+    readonly_fields = ('created_at',)
+admin.site.register(Category, CategoryAdmin)
 
 
-admin.site.register(Product)
-# @admin.register(Product)
-# class ProductAdmin(admin.ModelAdmin):
-#     inlines = [ProductImageInline]
-#     list_display = ('id', 'name_uz', 'price', 'quantity','category_en', 'category_ru','best_deals', 'view_button')
-#     search_fields = ('name_uz', 'name_ru', 'name_en')
-#     ordering = ('-created_at',)
-#     add_form_template = 'admin/orders/add_btn.html'
-#     change_form_template = add_form_template
 
-#     @admin.display(description='View Product')
-#     def view_button(self, obj):
-#         url = reverse('admin:orders_product_change', args=[obj.pk])
-#         return format_html(
-#             '<a class="view-button" href="#" onclick="viewProduct({id}); return false;">'
-#             '<i class="fas fa-eye"></i></a>',
-#             id=obj.pk
-#         )
+class ProductAdmin(admin.ModelAdmin):
+    list_display = ('id','name_uz', 'name_ru', 'name_en', 'price', 'quantity', 'category', 'best_deals', 'show_main_page', 'created_at')
+    list_filter = ('category', 'best_deals', 'show_main_page')
+    search_fields = ('name_uz', 'name_ru', 'name_en', 'price')
+    ordering = ['name_uz', 'name_ru', 'name_en']
+    readonly_fields = ('created_at',)
+
+# Register the models with the admin site
+admin.site.register(Product, ProductAdmin)

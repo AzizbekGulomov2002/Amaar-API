@@ -26,33 +26,17 @@ class Category(models.Model):
         return f"{self.name_en} - {self.name_ru}"
 
     class Meta:
-        ordering = ['name_ru', 'name_en']
+        ordering = ['id']
         verbose_name_plural = 'Categories'
 
 class Product(TranslatableModel):
     price = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True)
     quantity = models.PositiveIntegerField(null=True, blank=True)
-    category_uz = models.ForeignKey(
+    category = models.ForeignKey(
         Category, 
-        on_delete=models.CASCADE, 
-        related_name='products_uz',
-        null=True, 
-        blank=True
+        on_delete=models.CASCADE
     )
-    category_ru = models.ForeignKey(
-        Category, 
-        on_delete=models.CASCADE, 
-        related_name='products_ru',
-        null=True, 
-        blank=True
-    )
-    category_en = models.ForeignKey(  # Add this field
-        Category, 
-        on_delete=models.CASCADE, 
-        related_name='products_en',
-        null=True, 
-        blank=True
-    )
+    
     best_deals = models.BooleanField(default=False)
     created_at = models.DateTimeField(auto_now_add=True)
 
@@ -62,7 +46,7 @@ class Product(TranslatableModel):
         return "Product {self.name_ru}"
 
     class Meta:
-        ordering = ['name_uz', 'name_ru', 'name_en']
+        ordering = ['id']
         verbose_name_plural = 'Products'
 
 
