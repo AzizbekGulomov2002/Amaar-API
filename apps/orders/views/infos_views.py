@@ -15,24 +15,24 @@ from apps.users.models import User
 
 class PolicyAndPrivacyViewSet(viewsets.ModelViewSet):
     queryset = PolicyAndPrivacy.objects.all()
-    permission_classes = [IsAuthenticated]
+    permission_classes = [IsAuthenticatedOrReadOnly]
     serializer_class = PolicyAndPrivacySerializer
 
 
 class PublicOfferViewSet(viewsets.ModelViewSet):
     queryset = PublicOffer.objects.all()
-    permission_classes = [IsAuthenticated]
+    permission_classes = [IsAuthenticatedOrReadOnly]
     serializer_class = PublicOfferSerializer
 
 
 class ReturnPolicyViewSet(viewsets.ModelViewSet):
     queryset = ReturnPolicy.objects.all()
-    permission_classes = [IsAuthenticated]
+    permission_classes = [IsAuthenticatedOrReadOnly]
     serializer_class = ReturnPolicySerializer
 
 
 class BannerViewSet(viewsets.ModelViewSet):
-    permission_classes = [IsAuthenticated]
+    permission_classes = [IsAuthenticatedOrReadOnly]
     queryset = Banner.objects.all().order_by('-id')
     serializer_class = BannerSerializer
 

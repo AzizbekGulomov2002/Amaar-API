@@ -6,7 +6,7 @@ from dotenv import load_dotenv
 load_dotenv()
 BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'django-insecure-01a^wc2kflvivde7%4j!*3n2090!-s)+21@k5g5ur4!=a)p#g8'
-DEBUG = True
+DEBUG = False
 ALLOWED_HOSTS = ["api.tashkentmarket.ae","admin.tashkentmarket.ae","localhost"]
 APPEND_SLASH = False
 INSTALLED_APPS = [
