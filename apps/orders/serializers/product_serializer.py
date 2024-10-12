@@ -60,6 +60,11 @@ class ProductSerializer(serializers.ModelSerializer):
         line_items = []
         for item in order_items:
             product = item.product
+
+            # Check if price is None
+            if product.price is None:
+                raise ValueError(f"Product {product.id} has no price set.")
+
             images = [request.build_absolute_uri(image.image.url) for image in product.product_images.all()]
             line_items.append({
                 'price_data': {
@@ -69,7 +74,7 @@ class ProductSerializer(serializers.ModelSerializer):
                         'description': product.description_uz,
                         'images': images,
                     },
-                    'unit_amount': int(product.price * 100),
+                    'unit_amount': int(product.price * 100),  # Assuming product.price is now guaranteed to be a valid number
                 },
                 'quantity': item.quantity,
             })
