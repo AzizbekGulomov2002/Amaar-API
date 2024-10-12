@@ -2,7 +2,7 @@ from datetime import date, timedelta, datetime
 from django.db.models import Count
 from django.utils.timezone import now
 from rest_framework import viewsets
-from rest_framework.permissions import IsAuthenticated,AllowAny
+from rest_framework.permissions import IsAuthenticated,IsAuthenticatedOrReadOnly
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from apps.orders.models.infos import PolicyAndPrivacy, PublicOffer, ReturnPolicy, Banner, DeliveryInfo
@@ -39,12 +39,12 @@ class BannerViewSet(viewsets.ModelViewSet):
 
 class DeliveryInfoViewSet(viewsets.ModelViewSet):
     queryset = DeliveryInfo.objects.all()
-    permission_classes = [IsAuthenticated]
+    permission_classes = [IsAuthenticatedOrReadOnly]
     serializer_class = DeliveryInfoSerializer
 
 
 class DashboardView(APIView):
-    permission_classes = [IsAuthenticated]
+    permission_classes = [IsAuthenticatedOrReadOnly]
 
     def get(self, request):
         today = now().date()
