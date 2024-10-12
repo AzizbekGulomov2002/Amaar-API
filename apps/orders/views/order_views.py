@@ -45,9 +45,15 @@ class OrderListAPIView(generics.ListCreateAPIView):
     def create(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
-        order_data = serializer.save()
+        
+        # Debug log to check order items
+        order_items = serializer.validated_data.get('order_items', [])
+        for item in order_items:
+            print(f"Product ID: {item.product.id}, Price: {item.product.price}")
 
+        order_data = serializer.save()
         return Response(order_data, status=status.HTTP_201_CREATED)
+
 
 class UpdateDeliveryStatusView(APIView):
     permission_classes = [IsAuthenticated]
