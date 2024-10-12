@@ -55,9 +55,9 @@ class Order(models.Model):
                     item.restore_product_quantity()
         super().save(*args, **kwargs)
 
-        if is_new:
-            from apps.orders.tasks import send_order_to_telegram_task
-            transaction.on_commit(lambda: send_order_to_telegram_task.delay(self.id))
+        # if is_new:
+        #     from apps.orders.tasks import send_order_to_telegram_task
+        #     transaction.on_commit(lambda: send_order_to_telegram_task.delay(self.id))
 
 
 class OrderItem(models.Model):
