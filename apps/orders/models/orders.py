@@ -23,7 +23,7 @@ class Order(models.Model):
         PENDING = 'pending', 'Pending'
 
     user = models.ForeignKey(User, related_name='orders', on_delete=models.CASCADE)
-    type_order = models.CharField(max_length=20, choices=TypeOrder.choices, default=TypeOrder.STRIPE)
+    type_order = models.CharField(max_length=20, choices=TypeOrder.choices, default=TypeOrder.CASH)
     order_status = models.CharField(max_length=20, choices=Status.choices, default=Status.PENDING)
     payment_status = models.CharField(max_length=20, choices=PaymentStatus.choices, default=PaymentStatus.PENDING)
     address = models.CharField(max_length=255, null=True, blank=True)

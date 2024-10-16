@@ -2,7 +2,6 @@ import os
 from pathlib import Path
 
 from dotenv import load_dotenv
-
 load_dotenv()
 BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'django-insecure-01a^wc2kflvivde7%4j!*3n2090!-s)+21@k5g5ur4!=a)p#g8'
@@ -10,7 +9,7 @@ DEBUG = True
 ALLOWED_HOSTS = ["api.tashkentmarket.ae","admin.tashkentmarket.ae","localhost"]
 APPEND_SLASH = False
 INSTALLED_APPS = [
-    # 'jazzmin',
+    'jazzmin',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -228,8 +227,11 @@ JAZZMIN_UI_TWEAKS = {
 }
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
-STRIPE_SECRET_KEY = os.getenv('STRIPE_SECRET_KEY')
-STRIPE_PUBLISHABLE_KEY = os.getenv('STRIPE_PUBLISHABLE_KEY')
+# STRIPE_SECRET_KEY = os.getenv('STRIPE_SECRET_KEY')
+# STRIPE_PUBLISHABLE_KEY = os.getenv('STRIPE_PUBLISHABLE_KEY')
+
+STRIPE_SECRET_KEY = 'sk_test_51O2EEvBJlouxhpbibHG4gUqjIlbo9SazFPvd31OkBpazbyQVNEgfoelcaCrKSFN1Ln5RlNEwGW0l4BvM5GIyrA6b009ZHvBvu0'
+STRIPE_PUBLISHABLE_KEY = 'pk_test_51O2EEvBJlouxhpbitwOhBgXbdslgiysOC4AcLN8S2JIByp7WRZYVbX1ajnlMbzs5V68wbtDHcggCfFbXb7YqoOXM00CvuF8RUo'
 STRIPE_WEBHOOK_SECRET = os.getenv('STRIPE_WEBHOOK_SECRET')
 
 CELERY_BROKER_URL = 'redis://localhost:6379/0'
