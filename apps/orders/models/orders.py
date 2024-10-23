@@ -40,6 +40,11 @@ class Order(models.Model):
     def total_quantity(self):
         return sum(item.quantity for item in self.products.all())
 
+
+    @property
+    def total_quantity(self):
+        return sum(item.quantity for item in self.products.all())
+
     def save(self, *args, **kwargs):
         from apps.orders.models.payment import Payment
         is_new = self.pk is None
@@ -53,7 +58,29 @@ class Order(models.Model):
                 Payment.objects.filter(order=self).update(status='canceled')
                 for item in self.products.all():
                     item.restore_product_quantity()
+        
+        # Check if payment type is Stripe and payment is successful
+        if self.type_order == 'stripe' and self.payment_status == 'succeeded':
+            for item in self.products.all():
+                # Reduce the product quantity based on the order item
+                item.reduce_product_quantity()
+        
         super().save(*args, **kwargs)
+
+    # def save(self, *args, **kwargs):
+    #     from apps.orders.models.payment import Payment
+    #     is_new = self.pk is None
+
+    #     if self.type_order == 'cash':
+    #         if self.order_status == 'delivered':
+    #             self.payment_status = 'succeeded'
+    #             Payment.objects.filter(order=self).update(status='succeeded')
+    #         elif self.order_status == 'canceled':
+    #             self.payment_status = 'canceled'
+    #             Payment.objects.filter(order=self).update(status='canceled')
+    #             for item in self.products.all():
+    #                 item.restore_product_quantity()
+    #     super().save(*args, **kwargs)
 
         # if is_new:
         #     from apps.orders.tasks import send_order_to_telegram_task
@@ -74,6 +101,16 @@ class OrderItem(models.Model):
         if self.order.type_order == 'cash':
             self.product.quantity += self.quantity
             self.product.save()
+
+    def reduce_product_quantity(self):
+        """Reduce the product quantity after a successful Stripe payment."""
+        if self.product.quantity >= self.quantity:
+            self.product.quantity -= self.quantity
+            self.product.save()
+        else:
+            raise ValidationError(
+                f"Insufficient quantity for product {self.product.name_uz}. Available: {self.product.quantity}, Ordered: {self.quantity}"
+            )
 
     def __str__(self):
         return f"{self.quantity} of {self.product.name_uz}"

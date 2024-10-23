@@ -20,6 +20,7 @@ class ProductAdmin(admin.ModelAdmin):
     search_fields = ('name_uz', 'name_ru', 'name_en', 'price')
     ordering = ['name_uz']
     readonly_fields = ('created_at',)
+    list_per_page = 10
     inlines = [ProductImageInline]
 
 # Register the Product model with the admin site
@@ -30,6 +31,7 @@ class CategoryAdmin(admin.ModelAdmin):
     search_fields = ('name_uz', 'name_ru', 'name_en')
     ordering = ['name_ru', 'name_en']
     readonly_fields = ('created_at',)
+    list_per_page = 10
 admin.site.register(Category, CategoryAdmin)
 
 

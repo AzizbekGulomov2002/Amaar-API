@@ -81,6 +81,7 @@ class OrderAdmin(admin.ModelAdmin):
         'address', 'latitude', 'longitude', 'comment', 'created_at',)
     search_fields = ('address',)
     readonly_fields = ('payment_status',)
+    list_per_page = 10
     inlines = [OrderItemInline]
 
 

@@ -4,14 +4,14 @@ from rest_framework.decorators import action
 from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
 from rest_framework.views import APIView
-from rest_framework.permissions import IsAuthenticated,IsAuthenticatedOrReadOnly
+from rest_framework.permissions import IsAuthenticated
 from apps.orders.models.orders import OrderHistory, Order
 from apps.orders.serializers.order_serializer import OrderHistoryIDSerializer, OrderHistoryBaseSerializers, \
     OrderSerializer
 
 
 class OrderHistoryViewSet(viewsets.ModelViewSet):
-    permission_classes = [IsAuthenticated]
+    permission_classes = [AllowAny]
     queryset = OrderHistory.objects.all()
 
     def get_serializer_class(self):
@@ -33,7 +33,7 @@ class OrderHistoryViewSet(viewsets.ModelViewSet):
 
 class OrderListAPIView(generics.ListCreateAPIView):
     serializer_class = OrderSerializer
-    permission_classes = [IsAuthenticated]
+    permission_classes = [AllowAny]
 
     def get_queryset(self):
         queryset = Order.objects.all().order_by('-id')
@@ -45,15 +45,9 @@ class OrderListAPIView(generics.ListCreateAPIView):
     def create(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
-        
-        # Debug log to check order items
-        order_items = serializer.validated_data.get('order_items', [])
-        for item in order_items:
-            print(f"Product ID: {item.product.id}, Price: {item.product.price}")
-
         order_data = serializer.save()
-        return Response(order_data, status=status.HTTP_201_CREATED)
 
+        return Response(order_data, status=status.HTTP_201_CREATED)
 
 class UpdateDeliveryStatusView(APIView):
     permission_classes = [IsAuthenticated]
