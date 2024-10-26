@@ -18,8 +18,9 @@ schema_view = get_schema_view(
     public=True,
     permission_classes=(permissions.AllowAny,),  # noqa
 )
-
+from apps.users.views import UserDetailsAPIView
 urlpatterns = [
+    path('api/auth/user/<int:pk>/', UserDetailsAPIView.as_view(), name='user-detail'),
     path('admin/', admin.site.urls),
     path('api/', include('apps.urls')),
     path('', schema_view.with_ui('swagger', cache_timeout=0), name='schema-swagger-ui'),

@@ -44,4 +44,7 @@ class LoginSerializer(serializers.Serializer):
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
-        fields = ['id', 'phone_number', 'name', 'is_active', 'is_staff', 'date_joined', 'company']
+        fields = "__all__"
+        # fields = ['id', 'phone_number', 'name', 'is_active', 'is_staff', 'date_joined', 'company']
+
+
