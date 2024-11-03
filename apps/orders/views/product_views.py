@@ -50,7 +50,8 @@ class ProductViewSet(viewsets.ModelViewSet):
     def get_products_by_ids(self, request, *args, **kwargs):
         ids = request.query_params.get('ids', None)
         if ids:
-            ids_list = ids.split(',')
+            # Clean and filter IDs, ensuring they are numeric
+            ids_list = [id.strip('/') for id in ids.split(',') if id.strip('/').isdigit()]
             queryset = self.get_queryset().filter(id__in=ids_list)
         else:
             queryset = self.get_queryset().none()
@@ -69,55 +70,57 @@ class ProductViewSet(viewsets.ModelViewSet):
             'data': serializer.data
         })
 
-    def list(self, request, *args, **kwargs):
-        queryset = self.filter_queryset(self.get_queryset())
-        page = self.paginate_queryset(queryset)
-        serializer = self.get_serializer(page, many=True, context={'request': request})
 
-        # Generate the message dictionary for multiple languages
-        message = {
-            'ru': self.get_translated_message('success', 'ru'),
-            'en': self.get_translated_message('success', 'en'),
-        }
 
-        return self.get_paginated_response({
-            'message': message,
-            'data': serializer.data
-        })
+        def list(self, request, *args, **kwargs):
+            queryset = self.filter_queryset(self.get_queryset())
+            page = self.paginate_queryset(queryset)
+            serializer = self.get_serializer(page, many=True, context={'request': request})
 
-    def retrieve(self, request, *args, **kwargs):
-        try:
-            instance = self.get_object()
-        except NotFound:
+            # Generate the message dictionary for multiple languages
             message = {
-                'ru': self.get_translated_message('error', 'ru'),
-                'en': self.get_translated_message('error', 'en'),
+                'ru': self.get_translated_message('success', 'ru'),
+                'en': self.get_translated_message('success', 'en'),
             }
+
+            return self.get_paginated_response({
+                'message': message,
+                'data': serializer.data
+            })
+
+        def retrieve(self, request, *args, **kwargs):
+            try:
+                instance = self.get_object()
+            except NotFound:
+                message = {
+                    'ru': self.get_translated_message('error', 'ru'),
+                    'en': self.get_translated_message('error', 'en'),
+                }
+                return Response({
+                    'count': 0,
+                    'next': None,
+                    'previous': None,
+                    'results': {
+                        'message': message,
+                        'data': []
+                    }
+                }, status=status.HTTP_404_NOT_FOUND)
+
+            serializer = self.get_serializer(instance)
+            message = {
+                'ru': self.get_translated_message('success', 'ru'),
+                'en': self.get_translated_message('success', 'en'),
+            }
+
             return Response({
-                'count': 0,
+                'count': 1,
                 'next': None,
                 'previous': None,
                 'results': {
                     'message': message,
-                    'data': []
+                    'data': [serializer.data]  # Wrap in a list for consistency
                 }
-            }, status=status.HTTP_404_NOT_FOUND)
-
-        serializer = self.get_serializer(instance)
-        message = {
-            'ru': self.get_translated_message('success', 'ru'),
-            'en': self.get_translated_message('success', 'en'),
-        }
-
-        return Response({
-            'count': 1,
-            'next': None,
-            'previous': None,
-            'results': {
-                'message': message,
-                'data': [serializer.data]  # Wrap in a list for consistency
-            }
-        })
+            })
 
 
 class ProductImportView(APIView):
