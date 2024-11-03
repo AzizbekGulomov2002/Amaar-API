@@ -10,6 +10,9 @@ from apps.orders.serializers.product_serializer import CategorySerializer, Produ
 from apps.orders.views.base_views import BasePagination
 from rest_framework.permissions import IsAuthenticated
 import openpyxl
+from rest_framework.filters import OrderingFilter, SearchFilter
+from rest_framework.decorators import action
+
 
 class CategoryViewSet(viewsets.ModelViewSet):
     pagination_class = BasePagination
@@ -20,13 +23,101 @@ class CategoryViewSet(viewsets.ModelViewSet):
     permission_classes = [IsAuthenticatedOrReadOnly]
 
 class ProductViewSet(viewsets.ModelViewSet):
-    pagination_class = BasePagination
-    filter_backends = [DjangoFilterBackend, filters.OrderingFilter, filters.SearchFilter]
-    filterset_class = ProductFilter
+    permission_classes = [IsAuthenticatedOrReadOnly]
+    throttle_classes = []
     queryset = Product.objects.all().order_by('-id')
     serializer_class = ProductSerializer
-    permission_classes = [IsAuthenticatedOrReadOnly]
+    filter_backends = [DjangoFilterBackend, OrderingFilter, SearchFilter]
+    filterset_class = ProductFilter
+    pagination_class = BasePagination
     search_fields = ['name_uz', 'name_ru', 'name_en', 'description_uz', 'description_ru', 'description_en']
+
+    TRANSLATIONS = {
+        'success': {
+            'ru': 'Успешно',
+            'en': 'Success',
+        },
+        'error': {
+            'ru': 'Ошибка',
+            'en': 'Error',
+        },
+    }
+
+    def get_translated_message(self, key, lang='en'):
+        return self.TRANSLATIONS.get(key, {}).get(lang, key)
+
+    @action(detail=False, methods=['get'], url_path='by-ids')
+    def get_products_by_ids(self, request, *args, **kwargs):
+        ids = request.query_params.get('ids', None)
+        if ids:
+            ids_list = ids.split(',')
+            queryset = self.get_queryset().filter(id__in=ids_list)
+        else:
+            queryset = self.get_queryset().none()
+
+        page = self.paginate_queryset(queryset)
+        serializer = self.get_serializer(page, many=True, context={'request': request})
+
+        # Generate the message dictionary for multiple languages
+        message = {
+            'ru': self.get_translated_message('success', 'ru'),
+            'en': self.get_translated_message('success', 'en'),
+        }
+
+        return self.get_paginated_response({
+            'message': message,
+            'data': serializer.data
+        })
+
+    def list(self, request, *args, **kwargs):
+        queryset = self.filter_queryset(self.get_queryset())
+        page = self.paginate_queryset(queryset)
+        serializer = self.get_serializer(page, many=True, context={'request': request})
+
+        # Generate the message dictionary for multiple languages
+        message = {
+            'ru': self.get_translated_message('success', 'ru'),
+            'en': self.get_translated_message('success', 'en'),
+        }
+
+        return self.get_paginated_response({
+            'message': message,
+            'data': serializer.data
+        })
+
+    def retrieve(self, request, *args, **kwargs):
+        try:
+            instance = self.get_object()
+        except NotFound:
+            message = {
+                'ru': self.get_translated_message('error', 'ru'),
+                'en': self.get_translated_message('error', 'en'),
+            }
+            return Response({
+                'count': 0,
+                'next': None,
+                'previous': None,
+                'results': {
+                    'message': message,
+                    'data': []
+                }
+            }, status=status.HTTP_404_NOT_FOUND)
+
+        serializer = self.get_serializer(instance)
+        message = {
+            'ru': self.get_translated_message('success', 'ru'),
+            'en': self.get_translated_message('success', 'en'),
+        }
+
+        return Response({
+            'count': 1,
+            'next': None,
+            'previous': None,
+            'results': {
+                'message': message,
+                'data': [serializer.data]  # Wrap in a list for consistency
+            }
+        })
 
 
 class ProductImportView(APIView):
