@@ -255,6 +255,10 @@ SWAGGER_SETTINGS = {
 }
 
 REST_FRAMEWORK = {
+    'DEFAULT_THROTTLE_RATES': {
+        'register': '10/minute', 
+        'login':'10/minute',
+    },
     'DEFAULT_AUTHENTICATION_CLASSES': (
         'rest_framework.authentication.TokenAuthentication',
         'rest_framework.authentication.BasicAuthentication',

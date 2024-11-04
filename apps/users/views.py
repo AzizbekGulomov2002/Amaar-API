@@ -5,9 +5,8 @@ from rest_framework.authtoken.models import Token
 from rest_framework.permissions import AllowAny,IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
-# from tutorial.quickstart.serializers import UserSerializer
 from apps.users.serializers import UserSerializer
-
+from apps.users.throttles import RegisterThrottle,LoginThrottle
 from .models import User
 from .serializers import RegisterSerializer, LoginSerializer
 
@@ -15,16 +14,21 @@ from .serializers import RegisterSerializer, LoginSerializer
 class RegisterView(APIView):
     serializer_class = RegisterSerializer
     permission_classes = [AllowAny]
+    throttle_classes = [RegisterThrottle]
 
     @swagger_auto_schema(request_body=RegisterSerializer)
     def post(self, request, *args, **kwargs):
         serializer = self.serializer_class(data=request.data)
         if serializer.is_valid():
             user = serializer.save()
+            token, created = Token.objects.get_or_create(user=user)
             return Response({
-                "id": user.id,
-                "phone_number": user.phone_number,
-                "name": user.name
+                "token": token.key,
+                "user": {
+                    "id": user.id,
+                    "phone_number": user.phone_number,
+                    "name": user.name
+                }
             }, status=status.HTTP_201_CREATED)
         else:
             first_error_message = list(serializer.errors.values())[0][0]
@@ -37,6 +41,7 @@ class RegisterView(APIView):
 class LoginView(APIView):
     serializer_class = LoginSerializer
     permission_classes = [AllowAny]
+    throttle_classes = [LoginThrottle]
 
     @swagger_auto_schema(request_body=LoginSerializer)
     def post(self, request, *args, **kwargs):
