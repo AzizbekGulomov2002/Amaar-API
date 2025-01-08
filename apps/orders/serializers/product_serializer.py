@@ -66,12 +66,16 @@ class ProductSerializer(serializers.ModelSerializer):
                 raise ValueError(f"Product {product.id} has no price set.")
 
             images = [request.build_absolute_uri(image.image.url) for image in product.product_images.all()]
+            
+            # Set default description if empty
+            description = product.description_uz if product.description_uz else "No description available"
+
             line_items.append({
                 'price_data': {
                     'currency': 'aed',
                     'product_data': {
                         'name': product.name_uz,
-                        'description': product.description_uz,
+                        'description': description,
                         'images': images,
                     },
                     'unit_amount': int(product.price * 100),  # Assuming product.price is now guaranteed to be a valid number
@@ -97,6 +101,7 @@ class ProductSerializer(serializers.ModelSerializer):
             'expiration_time': expiration_time,
             'session_id': session.id
         }
+
 
 
 

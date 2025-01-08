@@ -43,7 +43,7 @@ class Product(TranslatableModel):
     show_main_page = models.BooleanField(default=False, null=True, blank=True)
 
     def __str__(self):
-        return "Product {self.name_ru}"
+        return self.name_en
 
     class Meta:
         ordering = ['id']

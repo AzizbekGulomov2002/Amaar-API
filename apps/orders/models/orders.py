@@ -32,6 +32,7 @@ class Order(models.Model):
     comment = models.TextField(null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
 
+
     class Meta:
         ordering = ['-created_at']
         verbose_name_plural = 'Orders'
@@ -67,25 +68,6 @@ class Order(models.Model):
         
         super().save(*args, **kwargs)
 
-    # def save(self, *args, **kwargs):
-    #     from apps.orders.models.payment import Payment
-    #     is_new = self.pk is None
-
-    #     if self.type_order == 'cash':
-    #         if self.order_status == 'delivered':
-    #             self.payment_status = 'succeeded'
-    #             Payment.objects.filter(order=self).update(status='succeeded')
-    #         elif self.order_status == 'canceled':
-    #             self.payment_status = 'canceled'
-    #             Payment.objects.filter(order=self).update(status='canceled')
-    #             for item in self.products.all():
-    #                 item.restore_product_quantity()
-    #     super().save(*args, **kwargs)
-
-        # if is_new:
-        #     from apps.orders.tasks import send_order_to_telegram_task
-        #     transaction.on_commit(lambda: send_order_to_telegram_task.delay(self.id))
-
 
 class OrderItem(models.Model):
     order = models.ForeignKey(Order, related_name='products', on_delete=models.CASCADE)
@@ -113,7 +95,7 @@ class OrderItem(models.Model):
             )
 
     def __str__(self):
-        return f"{self.quantity} of {self.product.name_uz}"
+        return self.product.name_en
 
     class Meta:
         ordering = ['order']

@@ -24,7 +24,13 @@ class OrderItemInline(admin.TabularInline):
     model = OrderItem
     formset = OrderItemInlineFormSet
     extra = 1
+    readonly_fields = ('total_sum',) 
 
+    def total_sum(self, obj):
+        if obj.product and obj.quantity:
+            return obj.quantity * obj.product.price
+        return 0 
+    total_sum.short_description = "Total Sum"
 
 class OrderAdminForm(ModelForm):
     class Meta:
@@ -32,12 +38,10 @@ class OrderAdminForm(ModelForm):
         fields = '__all__'
 
     def save(self, commit=True):
-        print(f"Saving Order: {self.instance}")
         order = super().save(commit=False)
 
         if not order.pk:
             order.save()
-            print(f"Order saved with ID: {order.pk}")
 
         if order.type_order == 'cash':
             if order.order_status == 'pending':
@@ -73,16 +77,22 @@ class OrderAdminForm(ModelForm):
             order.save()
         return order
 
-
 @admin.register(Order)
 class OrderAdmin(admin.ModelAdmin):
     list_display = (
         'id', 'user', 'type_order', 'order_status', 'payment_status',
-        'address', 'latitude', 'longitude', 'comment', 'created_at',)
+        'address', 'latitude', 'longitude', 'comment', 'created_at', 'total_sum'
+    )
     search_fields = ('address',)
     readonly_fields = ('payment_status',)
     list_per_page = 10
     inlines = [OrderItemInline]
+
+    def total_sum(self, obj):
+        total = sum(item.quantity * item.product.price for item in obj.products.all())
+        return f"{total} AED"  # Append 'AED' after the total sum
+    total_sum.short_description = 'Total Sum'
+
 
 
 @admin.register(OrderItem)

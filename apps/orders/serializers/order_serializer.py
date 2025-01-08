@@ -28,35 +28,29 @@ class OrderSerializer(serializers.ModelSerializer):
     def validate_products(self, products):  # noqa
         for product_data in products:
             product = Product.objects.get(id=product_data['product'].id)
-
-            # Check if product quantity is None
-            if product.quantity is None:
-                raise ValidationError(f"Product {product.name_uz} has no available quantity.")
-            
             if product.quantity < product_data['quantity']:
                 raise ValidationError(f"Insufficient quantity for product {product.name_uz}")
         return products
+
+
 
     def create(self, validated_data):
         products_data = validated_data.pop('products')
         user = validated_data.pop('user')
         order_type = validated_data.get('type_order', Order.TypeOrder.STRIPE)
 
-        # Set order and payment status based on the type of order
+        # Determine initial status
         if order_type == Order.TypeOrder.STRIPE:
-            order_status = Order.Status.PENDING
-            payment_status = Order.PaymentStatus.PENDING
+            validated_data['order_status'] = Order.Status.PENDING
+            validated_data['payment_status'] = Order.PaymentStatus.PENDING
         else:
-            order_status = Order.Status.SUCCESS
-            payment_status = Order.PaymentStatus.PENDING
+            validated_data['order_status'] = Order.Status.SUCCESS
+            validated_data['payment_status'] = Order.PaymentStatus.PENDING
 
-        order = Order.objects.create(
-            user=user,
-            order_status=order_status,
-            payment_status=payment_status,
-            **validated_data
-        )
+        # Create the order
+        order = Order.objects.create(user=user, **validated_data)
 
+        # Create order items
         for product_data in products_data:
             OrderItem.objects.create(order=order, **product_data)
             if order_type == Order.TypeOrder.CASH:
@@ -64,8 +58,8 @@ class OrderSerializer(serializers.ModelSerializer):
                 product.quantity -= product_data['quantity']
                 product.save()
 
+        # Handle payments
         if order_type == Order.TypeOrder.CASH:
-            # Create a payment entry for cash orders
             Payment.objects.create(
                 order=order,
                 product=product,
@@ -76,7 +70,6 @@ class OrderSerializer(serializers.ModelSerializer):
             )
             return self.to_representation(order)
 
-        # Generate payment link for Stripe
         payment_link_data = ProductSerializer.generate_payment_link(order.products.all(), self.context['request'])
 
         for product_data in products_data:
@@ -90,15 +83,17 @@ class OrderSerializer(serializers.ModelSerializer):
                 type_order=Order.TypeOrder.STRIPE,
             )
 
+        # Add payment link to response
         order_data = self.to_representation(order)
         order_data['payment_link'] = payment_link_data['payment_url']
+
         return order_data
+    
+
 
     def to_representation(self, instance):
         request = self.context.get('request')
         representation = super().to_representation(instance)
-
-        # Serialize products
         representation['products'] = [
             {
                 'id': item.product.id,
@@ -117,18 +112,73 @@ class OrderSerializer(serializers.ModelSerializer):
             } for item in instance.products.all()
         ]
 
-        # Serialize user details
         representation['user'] = {
             'id': instance.user.id,
             'name': instance.user.name,
             'phone_number': instance.user.phone_number
         } if instance.user else None
 
-        # Include order and payment status
         representation['order_status'] = instance.order_status
         representation['payment_status'] = instance.payment_status
 
         return representation
+
+
+    # def create(self, validated_data):
+    #     products_data = validated_data.pop('products')
+    #     user = validated_data.pop('user')
+    #     order_type = validated_data.get('type_order', Order.TypeOrder.STRIPE)
+
+    #     if order_type == Order.TypeOrder.STRIPE:
+    #         order_status = Order.Status.PENDING
+    #         payment_status = Order.PaymentStatus.PENDING
+    #     else:
+    #         order_status = Order.Status.SUCCESS
+    #         payment_status = Order.PaymentStatus.PENDING
+
+    #     order = Order.objects.create(user=user, order_status=order_status, payment_status=payment_status,
+    #                                  **validated_data)
+
+    #     for product_data in products_data:
+    #         OrderItem.objects.create(order=order, **product_data)
+    #         if order_type == Order.TypeOrder.CASH:
+    #             product = product_data['product']
+    #             product.quantity -= product_data['quantity']
+    #             product.save()
+
+    #     if order_type == Order.TypeOrder.CASH:
+    #         Payment.objects.create(
+    #             order=order,
+    #             product=product,
+    #             price=product.price,
+    #             quantity=product_data['quantity'],
+    #             status=Payment.PaymentStatus.PENDING,
+    #             type_order=Order.TypeOrder.CASH
+    #         )
+    #         return self.to_representation(order)
+
+    #     payment_link_data = ProductSerializer.generate_payment_link(order.products.all(), self.context['request'])
+
+    #     for product_data in products_data:
+    #         Payment.objects.create(
+    #             order=order,
+    #             product=product_data['product'],
+    #             price=product_data['product'].price,
+    #             quantity=product_data['quantity'],
+    #             status=Payment.PaymentStatus.PENDING,
+    #             stripe_session_id=payment_link_data['session_id'],
+    #             type_order=Order.TypeOrder.STRIPE,
+    #         )
+
+    #     order_data = self.to_representation(order)
+    #     order_data['payment_link'] = payment_link_data['payment_url']
+
+    #     return order_data
+
+
+
+
+    
 
 
 

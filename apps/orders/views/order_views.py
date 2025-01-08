@@ -1,3 +1,4 @@
+import asyncio
 from rest_framework import status
 from rest_framework import viewsets, generics
 from rest_framework.decorators import action
@@ -6,9 +7,9 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework.permissions import IsAuthenticated
 from apps.orders.models.orders import OrderHistory, Order
+from apps.orders.views.tg import send_order_notification
 from apps.orders.serializers.order_serializer import OrderHistoryIDSerializer, OrderHistoryBaseSerializers, \
     OrderSerializer
-
 
 class OrderHistoryViewSet(viewsets.ModelViewSet):
     permission_classes = [IsAuthenticated]
@@ -31,6 +32,8 @@ class OrderHistoryViewSet(viewsets.ModelViewSet):
         serializer = OrderHistoryBaseSerializers(order_histories, many=True)
         return Response(serializer.data)
 
+
+
 class OrderListAPIView(generics.ListCreateAPIView):
     serializer_class = OrderSerializer
     permission_classes = [AllowAny]
@@ -47,7 +50,23 @@ class OrderListAPIView(generics.ListCreateAPIView):
         serializer.is_valid(raise_exception=True)
         order_data = serializer.save()
 
+        # Telegram notification
+        order = Order.objects.get(id=order_data['id'])
+        user = order.user
+        products = order.products.all()
+        total_price = sum(item.quantity * item.product.price for item in products)
+        total_quantity = sum(item.quantity for item in products)
+        google_maps_url = (
+            f"https://www.google.com/maps/search/?api=1&query={order.latitude},{order.longitude}"
+            if order.latitude and order.longitude else "N/A"
+        )
+
+        # Call async function to send notification
+        asyncio.run(send_order_notification(order, user, products, total_price, total_quantity, google_maps_url))
+
         return Response(order_data, status=status.HTTP_201_CREATED)
+
+
 
 class UpdateDeliveryStatusView(APIView):
     permission_classes = [IsAuthenticated]
