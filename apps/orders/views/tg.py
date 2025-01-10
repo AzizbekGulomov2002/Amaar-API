@@ -33,8 +33,13 @@ async def send_order_notification(order, user, products, total_price, total_quan
         Exception: If anything blows up while sending the message.
     """
     # Telegram Bot Credentials (replace with your real deal)
-    BOT_TOKEN = "7645519439:AAEeYlt_R5TYGswdLOF1wLQ56g8ha_ywmTA"
-    CHAT_ID = "-1002263729881"
+    # BOT_TOKEN = "7645519439:AAEeYlt_R5TYGswdLOF1wLQ56g8ha_ywmTA"
+    # CHAT_ID = "-1002263729881"
+    
+    BOT_TOKEN = "6366441312:AAGxI9_1Cz3r_PnvhXdbGI7IXv1Ozh58f9g"
+    CHAT_ID = "-1002289902731"
+    
+    
 
     # URL encoding for Google Maps URL to ensure safe passage
     encoded_google_maps_url = quote(google_maps_url, safe=":/?&=")
