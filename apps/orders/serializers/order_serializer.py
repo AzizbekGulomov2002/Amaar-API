@@ -34,44 +34,84 @@ class OrderSerializer(serializers.ModelSerializer):
 
 
 
+    # def create(self, validated_data):
+    #     products_data = validated_data.pop('products')
+    #     user = validated_data.pop('user')
+    #     order_type = validated_data.get('type_order', Order.TypeOrder.STRIPE)
+
+    #     # Determine initial status
+    #     if order_type == Order.TypeOrder.STRIPE:
+    #         validated_data['order_status'] = Order.Status.PENDING
+    #         validated_data['payment_status'] = Order.PaymentStatus.PENDING
+    #     else:
+    #         validated_data['order_status'] = Order.Status.SUCCESS
+    #         validated_data['payment_status'] = Order.PaymentStatus.PENDING
+
+    #     # Create the order
+    #     order = Order.objects.create(user=user, **validated_data)
+
+    #     # Create order items
+    #     for product_data in products_data:
+    #         OrderItem.objects.create(order=order, **product_data)
+    #         if order_type == Order.TypeOrder.CASH:
+    #             product = product_data['product']
+    #             product.quantity -= product_data['quantity']
+    #             product.save()
+
+    #     # Handle payments
+    #     if order_type == Order.TypeOrder.CASH:
+    #         Payment.objects.create(
+    #             order=order,
+    #             product=product,
+    #             price=product.price,
+    #             quantity=product_data['quantity'],
+    #             status=Payment.PaymentStatus.PENDING,
+    #             type_order=Order.TypeOrder.CASH
+    #         )
+    #         return self.to_representation(order)
+
+    #     payment_link_data = ProductSerializer.generate_payment_link(order.products.all(), self.context['request'])
+
+    #     for product_data in products_data:
+    #         Payment.objects.create(
+    #             order=order,
+    #             product=product_data['product'],
+    #             price=product_data['product'].price,
+    #             quantity=product_data['quantity'],
+    #             status=Payment.PaymentStatus.PENDING,
+    #             stripe_session_id=payment_link_data['session_id'],
+    #             type_order=Order.TypeOrder.STRIPE,
+    #         )
+
+    #     # Add payment link to response
+    #     order_data = self.to_representation(order)
+    #     order_data['payment_link'] = payment_link_data['payment_url']
+
+    #     return order_data
+
+
     def create(self, validated_data):
         products_data = validated_data.pop('products')
         user = validated_data.pop('user')
-        order_type = validated_data.get('type_order', Order.TypeOrder.STRIPE)
+        
+        # Har qanday kiritilgan `type_order` ni `CASH` deb o'zgartiramiz
+        validated_data['type_order'] = Order.TypeOrder.CASH
 
-        # Determine initial status
-        if order_type == Order.TypeOrder.STRIPE:
-            validated_data['order_status'] = Order.Status.PENDING
-            validated_data['payment_status'] = Order.PaymentStatus.PENDING
-        else:
-            validated_data['order_status'] = Order.Status.SUCCESS
-            validated_data['payment_status'] = Order.PaymentStatus.PENDING
+        # Buyurtma uchun dastlabki holatlarni belgilaymiz
+        validated_data['order_status'] = Order.Status.PENDING
+        validated_data['payment_status'] = Order.PaymentStatus.PENDING
 
-        # Create the order
+        # Buyurtmani yaratamiz
         order = Order.objects.create(user=user, **validated_data)
 
-        # Create order items
+        # Buyurtma mahsulotlarini yaratamiz va mavjud miqdorni kamaytiramiz
         for product_data in products_data:
             OrderItem.objects.create(order=order, **product_data)
-            if order_type == Order.TypeOrder.CASH:
-                product = product_data['product']
-                product.quantity -= product_data['quantity']
-                product.save()
+            product = product_data['product']
+            product.quantity -= product_data['quantity']
+            product.save()
 
-        # Handle payments
-        if order_type == Order.TypeOrder.CASH:
-            Payment.objects.create(
-                order=order,
-                product=product,
-                price=product.price,
-                quantity=product_data['quantity'],
-                status=Payment.PaymentStatus.PENDING,
-                type_order=Order.TypeOrder.CASH
-            )
-            return self.to_representation(order)
-
-        payment_link_data = ProductSerializer.generate_payment_link(order.products.all(), self.context['request'])
-
+        # To'lovlar ma'lumotlarini yaratamiz
         for product_data in products_data:
             Payment.objects.create(
                 order=order,
@@ -79,15 +119,10 @@ class OrderSerializer(serializers.ModelSerializer):
                 price=product_data['product'].price,
                 quantity=product_data['quantity'],
                 status=Payment.PaymentStatus.PENDING,
-                stripe_session_id=payment_link_data['session_id'],
-                type_order=Order.TypeOrder.STRIPE,
+                type_order=Order.TypeOrder.CASH,  # To'lovni har doim `CASH` sifatida belgilaymiz
             )
 
-        # Add payment link to response
-        order_data = self.to_representation(order)
-        order_data['payment_link'] = payment_link_data['payment_url']
-
-        return order_data
+        return self.to_representation(order)
     
 
 
