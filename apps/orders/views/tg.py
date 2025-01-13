@@ -18,48 +18,49 @@ def get_products_str(products):
     return "\n".join([f"{item.product.name_en} x{item.quantity}" for item in products])
 
 async def send_order_notification(order, user, products, total_price, total_quantity, google_maps_url):
-    """
-    Sends an order notification message to a Telegram group.
+    # from urllib.parse import quote
+    # from aiogram import Bot
+    # from aiogram.types import ParseMode
+    # import html
 
-    Args:
-        order (object): Order object with complete order details.
-        user (object): User object containing `name` and `phone_number`.
-        products (QuerySet): QuerySet of product objects.
-        total_price (float): Total price of the order.
-        total_quantity (int): Total quantity of items in the order.
-        google_maps_url (str): Google Maps URL of the user's location.
-
-    Raises:
-        Exception: If anything blows up while sending the message.
-    """
-    # Telegram Bot Credentials (replace with your real deal)
-    # BOT_TOKEN = "7645519439:AAEeYlt_R5TYGswdLOF1wLQ56g8ha_ywmTA"
-    # CHAT_ID = "-1002263729881"
+    BOT_TOKEN = "7645519439:AAEeYlt_R5TYGswdLOF1wLQ56g8ha_ywmTA"
+    CHAT_ID = "-1002263729881"
     
-    BOT_TOKEN = "6366441312:AAGxI9_1Cz3r_PnvhXdbGI7IXv1Ozh58f9g"
-    CHAT_ID = "-1002289902731"
-    
+    # BOT_TOKEN = "6366441312:AAGxI9_1Cz3r_PnvhXdbGI7IXv1Ozh58f9g"
+    # CHAT_ID = "-1002289902731"
     
 
     # URL encoding for Google Maps URL to ensure safe passage
     encoded_google_maps_url = quote(google_maps_url, safe=":/?&=")
+    address = order.address or "No entered Address"
+
 
     # Fetch required data asynchronously
     order_type = await get_order_type_display(order)
     order_status = await get_order_status_display(order)
-    products_str = await get_products_str(products)
+    # products_str = await get_products_str(products)
+    
+
+    products_str = "\n".join(
+        f"{index}. {item.product.name_en} x {item.quantity} = {item.quantity * item.product.price} AED"
+        for index, item in enumerate(products, start=1)
+    )
 
     # Construct the notification message with HTML escaping
     message = (
-        f"👤 <b>User:</b> {html.escape(user.name)} | {html.escape(user.phone_number)}\n"
-        f"🛒 <b>Products:</b>\n{html.escape(products_str)}\n"
+        f"👤 <b>User:</b> {html.escape(user.name)} | {html.escape(user.phone_number)}\n \n \n "
+        f"🛒 <b>Products:</b>\n{html.escape(products_str)}\n \n \n"
         f"📦 <b>Total Quantity:</b> {html.escape(str(total_quantity))}\n"
-        f"💰 <b>Total Price:</b> {html.escape(str(total_price))} AED\n"  # Append 'AED' after the total price
+        f"💰 <b>Total Price:</b> {html.escape(str(total_price))} AED\n"
         f"📍 <b>Location:</b> <a href='{encoded_google_maps_url}'>Google Maps</a>\n"
+        f"💬 <b>Address:</b> {html.escape(address)}\n"
         f"🕒 <b>Created At:</b> {order.created_at.strftime('%Y-%m-%d %H:%M:%S')}\n"
         f"🔲 <b>Order Type:</b> {order_type}\n"
         f"🔘 <b>Order Status:</b> {order_status}"
     )
+
+
+
 
 
     try:
