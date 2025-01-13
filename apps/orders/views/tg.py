@@ -18,16 +18,14 @@ def get_products_str(products):
     return "\n".join([f"{item.product.name_en} x{item.quantity}" for item in products])
 
 async def send_order_notification(order, user, products, total_price, total_quantity, google_maps_url):
-    # from urllib.parse import quote
-    # from aiogram import Bot
-    # from aiogram.types import ParseMode
-    # import html
+    # Test mode 
 
-    BOT_TOKEN = "7645519439:AAEeYlt_R5TYGswdLOF1wLQ56g8ha_ywmTA"
-    CHAT_ID = "-1002263729881"
+    # BOT_TOKEN = "7645519439:AAEeYlt_R5TYGswdLOF1wLQ56g8ha_ywmTA"
+    # CHAT_ID = "-1002263729881"
     
-    # BOT_TOKEN = "6366441312:AAGxI9_1Cz3r_PnvhXdbGI7IXv1Ozh58f9g"
-    # CHAT_ID = "-1002289902731"
+    # Real mode
+    BOT_TOKEN = "6366441312:AAGxI9_1Cz3r_PnvhXdbGI7IXv1Ozh58f9g"
+    CHAT_ID = "-1002289902731"
     
 
     # URL encoding for Google Maps URL to ensure safe passage
