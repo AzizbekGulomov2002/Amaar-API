@@ -37,7 +37,8 @@ async def send_order_notification(order, user, products, total_price, total_quan
     order_type = await get_order_type_display(order)
     order_status = await get_order_status_display(order)
     # products_str = await get_products_str(products)
-    
+    comment = order.comment or "No comment"
+
 
     products_str = "\n".join(
         f"{index}. {item.product.name_en} x {item.quantity} = {item.quantity * item.product.price} AED"
@@ -54,7 +55,8 @@ async def send_order_notification(order, user, products, total_price, total_quan
         f"💬 <b>Address:</b> {html.escape(address)}\n"
         f"🕒 <b>Created At:</b> {order.created_at.strftime('%Y-%m-%d %H:%M:%S')}\n"
         f"🔲 <b>Order Type:</b> {order_type}\n"
-        f"🔘 <b>Order Status:</b> {order_status}"
+        f"🔘 <b>Order Status:</b> {order_status} \n"
+        f"💭 <b>Comment:</b> {html.escape(comment)}"
     )
 
 
