@@ -2,6 +2,18 @@
 
 Backend API for the Tashkent Market platform, built with Django and Django REST Framework.
 
+## Project Description
+
+`tashkentmarket.ae` is a production-focused digital ordering platform built for an Uzbek restaurant business in the UAE.  
+This backend powers the restaurant's mobile app and internal admin workflows, helping customers discover products, place orders, and complete online payments while superadmins receive real-time operational updates.
+
+The system is designed to support:
+- fast food ordering experience for UAE-based Uzbek cuisine customers
+- centralized catalog and order management for restaurant operations
+- secure payment flow using Stripe checkout
+- automated webhook-based payment status synchronization
+- Telegram notifications for superadmins when new orders are created
+
 It provides:
 - user authentication by phone number
 - product and category management
@@ -147,6 +159,36 @@ Authorization: Token <your_token>
 Order notifications are sent via Telegram bot:
 - group message to `TELEGRAM_GROUP_CHAT_ID`
 - optional direct message to `TELEGRAM_USER_CHAT_ID`
+
+## Product Samples
+
+### 1) Mobile Application Experience
+
+The backend APIs in this repository are used by the restaurant's mobile application for browsing categories/products and creating orders.
+
+![Mobile App Sample 1](img-samples/mobile-app-1.jpg)
+![Mobile App Sample 2](img-samples/mobile-app-2.jpg)
+
+### 2) Stripe Payment Integration
+
+Stripe checkout is integrated so customers can complete card payments securely from the app flow.
+
+![Stripe Integration Sample](img-samples/stripe-sample.jpg)
+
+### 3) Stripe Webhook + Order Status Sync
+
+After payment events are sent by Stripe, the webhook endpoint (`/api/webhook/`) updates payment and order statuses in the backend automatically.
+
+This ensures:
+- successful payments are reflected in order status
+- failed/canceled/expired payments are handled consistently
+- admin-side operations always see synchronized payment state
+
+### 4) Telegram Superadmin Notifications
+
+When a new order is created, the system sends formatted Telegram notifications to superadmin channels/accounts with customer details, products, total amount, and location link.
+
+![Telegram Superadmin Notification Sample](img-samples/tg-notification-sender.jpg)
 
 ## Admin Panel
 
