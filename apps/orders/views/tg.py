@@ -4,6 +4,7 @@ from aiogram.enums import ParseMode
 from urllib.parse import quote
 import html
 from asgiref.sync import sync_to_async
+from django.conf import settings
 
 @sync_to_async
 def get_order_type_display(order):
@@ -19,16 +20,9 @@ def get_products_str(products):
 
 
 async def send_order_notification(order, user, products, total_price, total_quantity, google_maps_url):
-    # Test mode 
-    
-    # BOT_TOKEN = "7645519439:AAEeYlt_R5TYGswdLOF1wLQ56g8ha_ywmTA"
-    # GROUP_CHAT_ID = "-1002263729881"
-    
-    # Real mode
-    BOT_TOKEN = "6366441312:AAGxI9_1Cz3r_PnvhXdbGI7IXv1Ozh58f9g"
-    GROUP_CHAT_ID = "-1002289902731"
-
-    USER_CHAT_ID = "471375859"  
+    bot_token = settings.TELEGRAM_BOT_TOKEN
+    group_chat_id = settings.TELEGRAM_GROUP_CHAT_ID
+    user_chat_id = settings.TELEGRAM_USER_CHAT_ID
 
     # Google Maps linkini tozalash
     encoded_google_maps_url = quote(google_maps_url, safe=":/?&=")
@@ -59,23 +53,26 @@ async def send_order_notification(order, user, products, total_price, total_quan
     )
 
     try:
-        bot = Bot(token=BOT_TOKEN)
+        if not bot_token or not group_chat_id:
+            return
+        bot = Bot(token=bot_token)
 
         # 1. Guruhga yuborish
         await bot.send_message(
-            chat_id=GROUP_CHAT_ID,
+            chat_id=group_chat_id,
             text=message,
             parse_mode=ParseMode.HTML,
             disable_web_page_preview=False,
         )
 
         # 2. Foydalanuvchiga (shaxsiy akkaunt) yuborish
-        await bot.send_message(
-            chat_id=USER_CHAT_ID,
-            text=message,
-            parse_mode=ParseMode.HTML,
-            disable_web_page_preview=False,
-        )
+        if user_chat_id:
+            await bot.send_message(
+                chat_id=user_chat_id,
+                text=message,
+                parse_mode=ParseMode.HTML,
+                disable_web_page_preview=False,
+            )
 
     except Exception as error:
         raise Exception(f"🔥 Epic fail while sending message: {error}")

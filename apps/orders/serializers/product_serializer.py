@@ -3,12 +3,15 @@ from datetime import datetime
 import openpyxl
 from django.core.exceptions import ObjectDoesNotExist
 import stripe
+from django.conf import settings
 from django.urls import reverse
 from django.utils.http import urlencode
 from rest_framework import serializers
 from openpyxl import load_workbook
 
 from apps.orders.models.products import ProductImage, Product, Category
+
+stripe.api_key = settings.STRIPE_SECRET_KEY
 
 
 class ProductImageSerializer(serializers.ModelSerializer):
